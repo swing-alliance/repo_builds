@@ -342,8 +342,8 @@ def reload_db(db_dir:str):
 
 
 if __name__ == "__main__":
-    #pull_fund_to_dir(target_dir="../funds_row/", startnum=20000, endnum=30000, threads=5)#1万到1万五在9月29完成
-    #update_funds_info("../funds_row/", "../app.db", 8, 10,19999)
+    #pull_fund_to_dir(target_dir="../funds_row/", startnum=150000, endnum=160000, threads=5,chunk_size=100)#150000-160000在10月3完成
+    #update_funds_info("../funds_row/", "../app.db", 8, 10,30000)
     # update_fund_by_dir("../funds_row/",10,3,300)
     # reload_db("../app.db")
     #flush_no_info("../funds_row/")  #数据库中不存在记录的直接删除,相对风险的操作
