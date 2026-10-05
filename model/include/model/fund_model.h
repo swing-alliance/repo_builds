@@ -25,8 +25,8 @@ namespace model {
         std::string fund_name;                // 基金名称
         std::string fund_type;                // 基金类型，混合|股票等
         std::string fund_info;                // 基金详情
-        int fund_valid = 1;                   // 0无效，1有效，默认1
         std::string update_time;              // 更新时间
+        int fund_valid = 1;                   // 0无效，1有效，默认1
         // --- 2. 热表字段 (fund_info_flex：经常变动的信息) ---
         std::string stocks_info;              // 股票信息 JSON 数组字符串，只保留最新一期
         int mark_flag = 0;                    // 0未标记，1标记，默认0
@@ -59,7 +59,7 @@ namespace model {
             return funds_list.size();
         }
         void low_level_load_data(const std::string& file_path);    // 适配计算
-        void std_load_data(const std::string & file_path,const std::string & db_path);    // 适配计算和ui
+        void std_load_data(const std::string & file_path);    // 适配计算和ui
 
         
         void get_max_drawndown_fund(int days);

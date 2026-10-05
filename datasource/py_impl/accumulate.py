@@ -347,8 +347,8 @@ if __name__ == "__main__":
     # update_fund_by_dir("../funds_row/",10,3,300)
     # reload_db("../app.db")
     #flush_no_info("../funds_row/")  #数据库中不存在记录的直接删除,相对风险的操作
-    flush_fund("../funds_row/", "../app.db", 30)  #大埔是的销毁,相对安全
+    #flush_fund("../funds_row/", "../app.db", 30)  #大埔是的销毁,相对安全
     
-    # update_fund_stock_holding(db_dir="../app.db",max_workers=4,batch_split_num=50,codes=["000001",s "000002", "000003"])
+    update_fund_stock_holding(db_dir="../app.db",max_workers=4,batch_split_num=50,codes=["000001", "000002", "000003"])
     # update_fund_stock_holding(db_dir="../app.db",max_workers=4,batch_split_num=50,codes=get_target_dir_codes("../funds_row"))
     pass

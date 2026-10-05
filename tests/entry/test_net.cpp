@@ -23,7 +23,10 @@ int main() {
         count++;
     }
     std::cout << "start_t" << core::getnow_string() << std::endl;
-    net::quick_pull_csv_file(names);
+
+    //net::quick_pull_csv_file(names, 400);
+	//net::push_csv_file("026559");
+    net::quick_push_csv_file(names, 500);
     std::cout << "end_t" << core::getnow_string() << std::endl;
 
 }

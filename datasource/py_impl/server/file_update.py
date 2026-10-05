@@ -82,4 +82,4 @@ async def get_csv_stor(data: CsvUploadRequest):
         raise HTTPException(status_code=500, detail=f"保存文件失败: {str(e)}")
 
 if __name__ == "__main__":
-    uvicorn.run("file_update:app", host="127.0.0.1", port=8880, reload=True, workers=4)
+    uvicorn.run("file_update:app", host="127.0.0.1", port=8880, reload=True, workers=1)

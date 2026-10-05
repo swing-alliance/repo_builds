@@ -6,6 +6,14 @@ project(io_medi VERSION 1.0.0 LANGUAGES CXX)
 
 add_library(io_medi STATIC
     src/file_medi.cpp
+    src/db_medi.cpp
+ "include/io_medi/buf_medi.h" "src/buf_medi.cpp")
+
+
+target_link_libraries(io_medi PUBLIC 
+    sqlite3
+    core
+   
 )
 
 

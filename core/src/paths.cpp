@@ -133,7 +133,7 @@ std::string get_project_root(const std::string& root_name) {
 std::string pj_root_dir   = get_project_root();
 std::string datasource    = join(pj_root_dir, "datasource");
 std::string funds_row_dir = join(datasource, "funds_row");
-std::string app_db        = join(datasource, "app.db");
+std::string app_db_path       = join(datasource, "app.db");
 std::string log_path =      join(datasource, "app.log");
 std::string config_path =    join(datasource, "config.json");
 

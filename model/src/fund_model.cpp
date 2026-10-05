@@ -6,6 +6,8 @@
 #include <string>
 #include <iostream>
 #include<filesystem>
+#include<io_medi/db_medi.h>
+#include<io_medi/buf_medi.h>
 namespace fs = std::filesystem;
 
 namespace model {
@@ -16,7 +18,7 @@ namespace model {
             return;
         }
         this->funds_list.clear();
-        this->funds_list.reserve(6000);// 大概有 5663 个文件，直接预分配 6000 个位置
+        this->funds_list.reserve(10000);
         for (const auto& entry : fs::directory_iterator(file_path)) {
             if (entry.is_regular_file()) {
                 auto path = entry.path();
@@ -36,7 +38,21 @@ namespace model {
     }
 
 	// 2. 标准全量加载（适配后台计算和后期 Qt UI 展示）
-    void std_load_data(const std::string& file_path, const std::string& db_path) {}
+    void datas_fund_manager::std_load_data(const std::string& file_path) {
+        this->low_level_load_data(file_path);
+		std::string sql = "SELECT fund_code, fund_name, fund_type, fund_info, update_time FROM fund_info;";
+        io_medi::db_exec_stream(sql, [this](const std::string& row_data, int col_num) {
+            for (int i = 0;i < this->data_nums();i++) {
+                if(this->funds_list[i].fund_code == io_medi::buf_split_line(row_data,0,'|')) {
+                    // 填充其他字段
+                    this->funds_list[i].fund_name = io_medi::buf_split_line(row_data,1,'|');
+                    this->funds_list[i].fund_type = io_medi::buf_split_line(row_data,2,'|');
+                    this->funds_list[i].fund_info = io_medi::buf_split_line(row_data,3,'|');
+                    this->funds_list[i].update_time = io_medi::buf_split_line(row_data,4,'|');
+                }
+            }
+        });
+    }
 
 
 
