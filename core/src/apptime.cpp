@@ -32,6 +32,7 @@ std::string get_real_now_string() {
     return strf_time(base, "%Y-%m-%d %H:%M:%S");
 }
 
+
 std::string getnow_string(const char* fmt) {
     return strf_time(getnow(), fmt);
 }
@@ -40,8 +41,11 @@ void app_stop(int t) {
         std::this_thread::sleep_for(std::chrono::milliseconds(t));
     }
 }
+//void usetime_offset(long long seconds) {
+//    g_offset_seconds.store(seconds, std::memory_order_relaxed);
+//}
 void usetime_offset(long long seconds) {
-    g_offset_seconds.store(seconds, std::memory_order_relaxed);
+    g_offset_seconds.fetch_add(seconds, std::memory_order_relaxed);
 }
 
 long long get_time_offset() {
