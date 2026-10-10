@@ -31,23 +31,19 @@ namespace model_int {
             }
             if (p > line_start) {
                 std::string_view line(line_start, p - line_start);
-                // --- 无条件跳过第一行表头 ---
                 if (is_first_line) {
                     is_first_line = false;
                     while (p < end && (*p == '\n' || *p == '\r')) { p++; }
                     continue;
                 }
-                // --- 假设格式为：时间,净值,收益率 ---
                 size_t first_comma = line.find(',');
                 if (first_comma != std::string_view::npos) {
                     size_t second_comma = line.find(',', first_comma + 1);
                     model::fund_row_tm_val row;
-                    // --- 1. 复制时间 ---
                     std::string_view time_view = line.substr(0, first_comma);
                     size_t copy_len = std::min(time_view.size(), sizeof(row.time) - 1);
                     std::memcpy(row.time, time_view.data(), copy_len);
                     row.time[copy_len] = '\0';
-                    // --- 2. 解析净值 (accum_val) ---
                     std::string_view val_str;
                     std::string_view ret_str;
                     if (second_comma != std::string_view::npos) {
@@ -55,10 +51,8 @@ namespace model_int {
                         ret_str = line.substr(second_comma + 1);
                     }
                     else {
-                        // 如果只有一处逗号（兼容可能没有收益率的旧格式数据）
                         val_str = line.substr(first_comma + 1);
                     }
-                    // 解析净值
                     if (val_str.empty() || val_str == "0") {
                         row.accum_val = 0.0f;
                     }
@@ -67,7 +61,6 @@ namespace model_int {
                         auto [ptr, ec] = std::from_chars(val_str.data(), val_str.data() + val_str.size(), parsed_val);
                         row.accum_val = (ec == std::errc()) ? parsed_val : 0.0f;
                     }
-                    // --- 3. 解析日收益率 (daily_return) ---
                     if (ret_str.empty() || ret_str == "0") {
                         row.daily_return = 0.0f;
                     }

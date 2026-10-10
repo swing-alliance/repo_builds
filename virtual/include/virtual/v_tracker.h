@@ -15,7 +15,7 @@ namespace v_sim {
 			float deal_p;  //成交价格
 			float deal_num;  //成交数量
 			int status;
-			std::string app_t;
+			std::string log_t;
 	};
 
 	class transfer_log {
@@ -39,6 +39,7 @@ namespace v_sim {
 		void v_export_logs(); 
 		bool check_is_trade_day(std::string symbol);
 		bool check_is_trading_time();
+		int  get_trasfer_days(std::string symbol);   //获取这个返回是t+几？？需要标准加载，低级加载默认返回t+1
 		std::vector<transfer_log> trasfer_logs;
 		std::vector<trade_log> trade_logs;
 	};

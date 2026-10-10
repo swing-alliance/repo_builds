@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
-
+#include"opt_enum.h"
 namespace model {
     class fund_row_tm_val {   // 单条净值记录
     public:
@@ -34,7 +34,7 @@ namespace model {
 
         // --- 3. 业务扩展字段 ---
         std::vector<fund_row_tm_val> data;    // 净值序列（特殊，用于计算与图表展示）
-        bool visiable=true;    //上层ui用，程序加载出来默认可见，在排序或者筛选后出现脏值时或者主动不想见
+        bool visiable=true;                   //上层ui用，程序加载出来默认可见，在排序或者筛选后出现脏值时或者主动不想见
         //----4.计算结果字段------
         cal_results cal_results;
         //----5.相关类方法-------
@@ -59,14 +59,11 @@ namespace model {
             return funds_list.size();
         }
         void low_level_load_data(const std::string& file_path);    // 适配计算
+        void fast_low_level_load_data(const std::string& file_path, int num_threads=12);  // 适配计算
         void std_load_data(const std::string & file_path);    // 适配计算和ui
-
-        
-        void get_max_drawndown_fund(int days);
-        void get_per_annum_rated_fund(int days);
-        void get_volatility_rated_fund(int days);
-        void get_calmar_rated_fund(int days);      //卡尔马，年化/最大回撤
-        void get_sharpe_rated_fund(int days);      //夏普
+        void print_top_code(int nums);   //打印前几个code
+		void get_all_cal_results(int days, int num_threads);         //计算所有指标
+		void sort_by_options(const sort_options& options);  // 排序函数
     };
 
 

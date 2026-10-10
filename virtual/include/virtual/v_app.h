@@ -13,6 +13,7 @@ namespace v_sim {
 	public:
 		void init_single_player_fund(std::string start_time);       //fund单机玩家
 		void v_usetime_offset(long long seconds);      //在原有的偏移时间后加上事务检查
+		void v_jump_next_trading_day(int days=1);    //稳定的跳跃到下一个交易日
 	};
 
 }

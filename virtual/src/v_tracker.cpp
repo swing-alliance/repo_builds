@@ -2,7 +2,7 @@
 #include "virtual/v_account.h"
 #include "virtual/v_brokerage.h"
 #include"virtual/static_enum.h"
-
+#include<cstdlib>
 #include<model/fund_model.h>
 #include<utility>
 #include<core/apptime.h>
@@ -28,7 +28,8 @@ namespace v_sim {
 					if (rc.first == -1 || rc.second == -1) { return false; } //失败了，回退
 					log.deal_p = this->fund_datasource.funds_list[i].data[rc.second].accum_val;   //直接最后一天的净值买进去
 					log.deal_num = buy_m / log.deal_p;
-					log.app_t = core::getnow_string();
+					std::string itstime = this->fund_datasource.funds_list[i].data[rc.second].time;
+					log.log_t = core::strf_time(core::intf_time(itstime)+15*3600-1);         //当天净值的2点59买入
 					log.status = checked;
 					this->trade_logs.push_back(log);
 					return true;
@@ -65,14 +66,15 @@ namespace v_sim {
 				if (this->fund_datasource.funds_list[i].fund_code == symbol) {
 					std::pair<int, int> rc = this->fund_datasource.funds_list[i].get_split_fund_model(1);
 					if (rc.first == -1 || rc.second == -1) { return false; } //失败了，回退
-					log.deal_p = this->fund_datasource.funds_list[i].data[rc.second].accum_val;   //直接最后一天的净值卖进去
-					log.app_t = core::getnow_string();
+					log.deal_p = this->fund_datasource.funds_list[i].data[rc.second].accum_val;   //直接最后一天的净值卖出去
+					std::string itstime = this->fund_datasource.funds_list[i].data[rc.second].time;
+					log.log_t = core::strf_time(core::intf_time(itstime) + 15 * 3600 - 1);         //当天净值的2点59卖出
 					log.status = checked;
 					this->trade_logs.push_back(log);
 					transfer_log tsf_log;
 					tsf_log.amount = log.deal_p * log.deal_num;
-					time_t tnow = core::intf_time(log.app_t);
-					tsf_log.perform_date = core::strf_time(tnow + 60 * 60 * 24);                            //t+n日后回到账户,先写一天后返回
+					time_t tnow = core::intf_time(log.log_t);
+					tsf_log.perform_date = core::strf_time(tnow + 3600 * 24*1+10);                  //t+n日后回到账户,先写一天后返回
 					tsf_log.status = uncheck;
 					tsf_log.to_ac_id = log.ac_id;
 					this->trasfer_logs.push_back(tsf_log);
@@ -103,7 +105,7 @@ namespace v_sim {
 			j["deal_p"] = log.deal_p;
 			j["deal_num"] = log.deal_num;
 			j["status"] = log.status;
-			j["app_t"] = log.app_t;
+			j["log_t"] = log.log_t;
 			big_j.push_back(j);       //关键：加进数组
 		}
 		std::string s1 = big_j.dump(4);   // 缩进 4 空格
@@ -142,9 +144,43 @@ namespace v_sim {
 		return;
 	}
 
-	bool v_global_tracker::check_is_trade_day(std::string symbol) { return false; }
+	bool v_global_tracker::check_is_trade_day(std::string symbol) { 
+		for (int i = 0; i < this->fund_datasource.data_nums(); i++) {
+			if (this->fund_datasource.funds_list[i].fund_code == symbol) {
+				std::pair<int, int> rc = this->fund_datasource.funds_list[i].get_split_fund_model(1);
+				if (rc.first == -1 || rc.second == -1) { return false;}
+				time_t tnow = core::getnow();
+				std::string trade_day =this->fund_datasource.funds_list[i].data[rc.second].time;
+				time_t trade_t = core::intf_time(trade_day);
+				if (tnow > trade_t && tnow < trade_t + 24 * 3600) { return true; }
+				return false;
+			}
+		}
+		return false; 
+	}
 
-	bool v_global_tracker::check_is_trading_time() { return true; }
+	bool v_global_tracker::check_is_trading_time() {
+		int total_nums = this->fund_datasource.data_nums();
+		if (total_nums <= 0) {
+			return false;
+		}
+		int check_count = std::min(10, total_nums);
+		time_t tnow = core::getnow();
+		for (int i = 0; i < check_count; i++) {
+			int idx = rand() % total_nums; // 使用传统的 rand()
+			std::pair<int, int> rc = this->fund_datasource.funds_list[idx].get_split_fund_model(1);
+			if (rc.first == -1 || rc.second == -1) {
+				continue;
+			}
+			std::string trade_day = this->fund_datasource.funds_list[idx].data[rc.second].time;
+			time_t trade_t = core::intf_time(trade_day);
+			if (tnow > trade_t + 9 * 3600 && tnow < trade_t + 15 * 3600) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 
 }
 

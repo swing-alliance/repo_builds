@@ -6,6 +6,9 @@
 #include<cstdio>
 #include<iostream>
 #include<time.h>
+#include<thread>
+#include"model/opt_enum.h"
+#include<algorithm>
 //for scalable app
 
 
@@ -100,7 +103,6 @@ namespace model{
 
     bool fund_model::get_span_sharpe_ret(int days){
         if (this->get_span_ann_ret(days) == true && this->get_span_vol_ret(days) == true) {
-            //std::cout << "debug info" << core::no_risk_rt_ratio << std::endl;
             this->cal_results.sharpe_result = (this->cal_results.span_annum_result - core::no_risk_rt_ratio) / this->cal_results.volatility_result;
             return true;
         }
@@ -127,10 +129,64 @@ namespace model{
     
     }
     
+    void datas_fund_manager::get_all_cal_results(int days, int num_threads) {
+        size_t total_funds = this->funds_list.size();
+        if (total_funds == 0) {
+            return;
+        }
+        if (num_threads <= 0) {
+            num_threads = 4;
+        }
+        if (static_cast<size_t>(num_threads) > total_funds) {
+            num_threads = static_cast<int>(total_funds);
+        }
+        auto worker = [&](size_t start_idx, size_t end_idx) {
+            for (size_t i = start_idx; i < end_idx; ++i) {
+                this->funds_list[i].get_span_ann_ret(days);
+                this->funds_list[i].get_span_calmar_ret(days);
+                this->funds_list[i].get_span_sharpe_ret(days);
+                this->funds_list[i].get_span_vol_ret(days);
+                this->funds_list[i].get_span_drawdown_ret(days);
+            }
+            };
+        std::vector<std::thread> threads;
+        threads.reserve(num_threads);
+        size_t chunk_size = total_funds / num_threads;
+        size_t remainder = total_funds % num_threads;
+        size_t current_start = 0;
+        for (int i = 0; i < num_threads; ++i) {
+            size_t current_chunk_size = chunk_size + (i < remainder ? 1 : 0);
+            size_t current_end = current_start + current_chunk_size;
 
-    void datas_fund_manager::get_max_drawndown_fund(int days) {}
-    void datas_fund_manager::get_per_annum_rated_fund(int days) {}
-    void datas_fund_manager::get_volatility_rated_fund(int days) {}
-    void datas_fund_manager::get_calmar_rated_fund(int days) {}     //卡尔马，年化/最大回撤,算完后回填
-    void datas_fund_manager::get_sharpe_rated_fund(int days) {}      //夏普
-}
+            if (current_start < current_end) {
+                threads.emplace_back(worker, current_start, current_end);
+            }
+            current_start = current_end;
+        }
+        for (auto& t : threads) {
+            if (t.joinable()) {
+                t.join();
+            }
+        }
+        return;
+    }
+
+
+    void datas_fund_manager::print_top_code(int nums) {
+        for (size_t i = 0; i < std::min(static_cast<size_t>(nums), this->funds_list.size()); ++i) {
+            std::cout << "Fund Code: " << this->funds_list[i].fund_code << std::endl;
+        }
+    }
+
+
+    void sort_by_options(const sort_options& options) {
+		
+    
+    
+    }
+
+
+
+
+
+    }//namespace model
