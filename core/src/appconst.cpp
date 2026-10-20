@@ -4,7 +4,7 @@
 
 
 namespace core {
-	float no_risk_rt_ratio = 0.01;   //代表无风险年化利率
+	float no_risk_rt_ratio = 0.018;   //代表无风险年化利率
 
 }
 

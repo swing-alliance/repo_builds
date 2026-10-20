@@ -9,13 +9,15 @@ namespace model {
         float accum_val;    // 累计净值
         float daily_return;  //日回报率
     };
-    class cal_results {    //计算结果
+    class cal_results {    //计算结果,仅仅储存基础指标
     public:
         float max_drawdown_result = -9999;
         float span_annum_result = -9999;
         float volatility_result = -9999;
         float calmar_result = -9999;
         float sharpe_result = -9999;
+        float sortino_result = -9999;
+        float recover_factor_result = -9999;
     };
     
     class fund_model {   // 基金模型，完整映射 fund_info（冷表）与 fund_info_flex（热表）结构
@@ -44,6 +46,8 @@ namespace model {
         bool get_span_vol_ret(int days);
         bool get_span_sharpe_ret(int days);
         bool get_span_calmar_ret(int days);
+        bool get_sortino_ret(int days);
+        bool get_recover_factor_ret(int days);
         void print_cal_result();
 
     };
@@ -60,15 +64,13 @@ namespace model {
         }
         void low_level_load_data(const std::string& file_path);    // 适配计算
         void fast_low_level_load_data(const std::string& file_path, int num_threads=12);  // 适配计算
+        void fast_get_all_cal_results(int days, int num_threads);         //快速计算所有指标
         void std_load_data(const std::string & file_path);    // 适配计算和ui
         void print_top_code(int nums);   //打印前几个code
-		void get_all_cal_results(int days, int num_threads);         //计算所有指标
 		void sort_by_options(const sort_options& options);  // 排序函数
     };
 
-
-
-
+    void sort_COMPLEX_BALANCED_stratagy(datas_fund_manager& dfm, const sort_options& options);
 
 } // namespace model
 

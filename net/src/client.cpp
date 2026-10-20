@@ -233,7 +233,6 @@ namespace net {
                 }
                 });
         }
-
         for (auto& t : worker_threads) {
             if (t.joinable()) t.join();
         }

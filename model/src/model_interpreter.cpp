@@ -2,13 +2,13 @@
 #include <string>
 #include <string_view>
 #include <vector>
-#include <charconv> // 引入超高速数值解析库
+#include <cstdlib>  // 引入 std::strtof
 #include <cstring>  // 引入 std::memcpy
 #include "model/fund_model.h"
 #include "model/model_interpreter.h"
 
 namespace model_int {
-	// 能吊打 pandas 的针对基金的 CSV 解析器，专门针对基金净值数据格式优化，支持 UTF-8 BOM 自动跳过，支持表头自动跳过，支持缺失值处理，支持高性能数值解析。
+    // 能吊打 pandas 的针对基金的 CSV 解析器，专门针对基金净值数据格式优化，支持 UTF-8 BOM 自动跳过，支持表头自动跳过，支持缺失值处理，支持高性能数值解析。
     bool mem_to_obj_fund(model::fund_model* target, const std::string* buf) {
         if (!buf || buf->empty()) {
             return false;
@@ -57,17 +57,16 @@ namespace model_int {
                         row.accum_val = 0.0f;
                     }
                     else {
-                        float parsed_val = 0.0f;
-                        auto [ptr, ec] = std::from_chars(val_str.data(), val_str.data() + val_str.size(), parsed_val);
-                        row.accum_val = (ec == std::errc()) ? parsed_val : 0.0f;
+                        // 使用 std::string 构造临时字符串，配合 std::strtof 兼容所有版本的 MinGW/GCC
+                        std::string temp_val(val_str.begin(), val_str.end());
+                        row.accum_val = std::strtof(temp_val.c_str(), nullptr);
                     }
                     if (ret_str.empty() || ret_str == "0") {
                         row.daily_return = 0.0f;
                     }
                     else {
-                        float parsed_ret = 0.0f;
-                        auto [ptr, ec] = std::from_chars(ret_str.data(), ret_str.data() + ret_str.size(), parsed_ret);
-                        row.daily_return = (ec == std::errc()) ? parsed_ret : 0.0f;
+                        std::string temp_ret(ret_str.begin(), ret_str.end());
+                        row.daily_return = std::strtof(temp_ret.c_str(), nullptr);
                     }
                     alotdata.push_back(row);
                 }

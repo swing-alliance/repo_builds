@@ -41,9 +41,7 @@ namespace model {
 
     void datas_fund_manager::fast_low_level_load_data(const std::string& file_path, int num_threads) {
         if (!fs::exists(file_path) || !fs::is_directory(file_path)) {
-            std::cerr << "错误：无效的目录路径！" << std::endl;
-            return;
-        }
+            std::cerr << "错误：无效的目录路径！" << std::endl;return;}
         std::vector<std::filesystem::path> csv_paths;
         for (const auto& entry : fs::directory_iterator(file_path)) {
             if (entry.is_regular_file() && entry.path().extension() == ".csv") {
@@ -100,15 +98,13 @@ namespace model {
     }
 
 
-
 	// 2. 标准全量加载（适配后台计算和后期 Qt UI 展示）
     void datas_fund_manager::std_load_data(const std::string& file_path) {
-        this->low_level_load_data(file_path);
+        this->fast_low_level_load_data(file_path);
 		std::string sql = "SELECT fund_code, fund_name, fund_type, fund_info, update_time FROM fund_info;";
         io_medi::db_exec_stream(sql, [this](const std::string& row_data, int col_num) {
             for (int i = 0;i < this->data_nums();i++) {
                 if(this->funds_list[i].fund_code == io_medi::buf_split_line(row_data,0,'|')) {
-                    // 填充其他字段
                     this->funds_list[i].fund_name = io_medi::buf_split_line(row_data,1,'|');
                     this->funds_list[i].fund_type = io_medi::buf_split_line(row_data,2,'|');
                     this->funds_list[i].fund_info = io_medi::buf_split_line(row_data,3,'|');

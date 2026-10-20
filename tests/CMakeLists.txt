@@ -24,7 +24,7 @@ target_link_libraries(tests PUBLIC
 
 # 4. 主测试可执行程序
 add_executable(test_inst
-    entry/test_md.cpp
+    entry/compatible.cpp
 )
 
 # 5. 可执行程序链接 tests 接口库

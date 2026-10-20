@@ -6,8 +6,9 @@
 #include <io_medi/file_medi.h>
 #include "model/fund_model.h"
 #include "model/model_interpreter.h"
-
+#include <windows.h>
 int main() {
+    SetConsoleOutputCP(CP_UTF8);
     model::datas_fund_manager fd_mg;
     
     std::cout << "start_t is " << core::getnow_string() << std::endl;

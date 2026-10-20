@@ -35,4 +35,13 @@ namespace io_medi {
 		fclose(fp);
 	}
 
+    void clrFile(const std::string& path) {
+        FILE* fp = std::fopen(path.c_str(), "w");  // "w" 自动截断为 0 字节
+        if (!fp) return;                            // 打开失败，静默返回
+        std::fclose(fp);                            // 必须关闭
+    }
+    void delFile(const std::string& path) {
+        std::remove(path.c_str());
+    }
+
 } // namespace io_medi

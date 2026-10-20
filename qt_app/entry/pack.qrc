@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/">
+        <file>../src/autumn.png</file>
+        <file>../src/infinite.png</file>
+        <file>../src/spring.png</file>
+        <file>../src/summer.png</file>
+        <file>../src/winter.png</file>
+    </qresource>
+</RCC>

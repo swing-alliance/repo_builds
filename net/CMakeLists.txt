@@ -6,9 +6,7 @@ project(net VERSION 1.0.0 LANGUAGES CXX)
 
 include(FetchContent)
 
-
-
-# 2. 声明并拉取 nlohmann_json（同理，如果它也偶尔下载失败，也可以加加速前缀）
+# 2. 声明并拉取 nlohmann_json
 FetchContent_Declare(
   nlohmann_json
   URL https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz
@@ -34,3 +32,8 @@ target_link_libraries(net PUBLIC
     io_medi
     nlohmann_json::nlohmann_json
 )
+
+# 💡 核心修改：在 Windows 平台下（无论是 MinGW 还是 MSVC），必须链接 Windows 网络库和加密库
+if(WIN32)
+    target_link_libraries(net PUBLIC ws2_32 crypt32)
+endif()
