@@ -22,6 +22,7 @@ fund_card::fund_card(model::fund_model *entity, QWidget *parent)
         "    border-radius: 5px;"
         "}"
         );
+
 }
 
 fund_card::~fund_card()
@@ -37,3 +38,5 @@ void fund_card::paintEvent(QPaintEvent *event)
     QPainter p(this);
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 }
+
+

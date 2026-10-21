@@ -9,7 +9,7 @@
 #include<virtual/v_app.h>
 #include <timewindow.h>
 #include<QAction>
-#include "test_login.h"
+
 #include <model/fund_model.h>
 #include "fund_pannel_widget.h"
 EntryWindow::EntryWindow(QWidget *parent)
@@ -32,16 +32,7 @@ EntryWindow::EntryWindow(QWidget *parent)
     connect(ui->actiondir_fund_pannel,&QAction::triggered,this,[this](){this->dir_fund_pannel();});
 
     //======测试界=====
-    connect(ui->dir_login_test, &QAction::triggered, this, [this](){
-        if (!loginPage) {
-            loginPage = new test_login(this);
-            ui->stackedWidget->addWidget(loginPage); // 仅添加一次
-        }
-        ui->stackedWidget->setCurrentWidget(loginPage); // 毫秒级切换，零负担
-    });
-    connect(ui->dir_main_test,&QAction::triggered,this,[this](){
-        ui->stackedWidget->setCurrentIndex(0);
-    });
+
 
     //======测试界=====
 
@@ -54,7 +45,6 @@ void EntryWindow::dir_main_page(){ui->stackedWidget->setCurrentIndex(0);}
 
 void EntryWindow::dir_fund_pannel()
 {
-
     if (!fund_pannel) {
         fund_pannel = new fund_pannel_widget(this);
         if (this->g_fund_manager != nullptr) {

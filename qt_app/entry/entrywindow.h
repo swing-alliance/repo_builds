@@ -38,7 +38,6 @@ private:
     Ui::EntryWindow *ui;          //主窗口ui
     model::datas_fund_manager * g_fund_manager=nullptr;    //全局唯一
     //=================添加再stackwidget上的======================
-    test_login *loginPage = nullptr; //测试用
     fund_pannel_widget * fund_pannel=nullptr;
     //=========================界================================
 };
