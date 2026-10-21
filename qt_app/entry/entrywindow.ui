@@ -232,6 +232,7 @@ QPushButton:pressed {
      <string>网络</string>
     </property>
     <addaction name="actionupdate_basic_data"/>
+    <addaction name="actioncall_server_update"/>
    </widget>
    <widget class="QMenu" name="calcmenu">
     <property name="layoutDirection">
@@ -242,14 +243,6 @@ QPushButton:pressed {
     </property>
     <addaction name="action_v_time"/>
    </widget>
-   <widget class="QMenu" name="settingmenu">
-    <property name="layoutDirection">
-     <enum>Qt::LayoutDirection::LeftToRight</enum>
-    </property>
-    <property name="title">
-     <string>设置</string>
-    </property>
-   </widget>
    <widget class="QMenu" name="menutest">
     <property name="title">
      <string>test</string>
@@ -257,11 +250,24 @@ QPushButton:pressed {
     <addaction name="dir_login_test"/>
     <addaction name="dir_main_test"/>
    </widget>
+   <widget class="QMenu" name="appmenu">
+    <property name="title">
+     <string>应用</string>
+    </property>
+    <addaction name="actiondir_main"/>
+    <addaction name="actiondir_fund_pannel"/>
+   </widget>
+   <widget class="QMenu" name="settingmenu">
+    <property name="title">
+     <string>设置</string>
+    </property>
+   </widget>
    <addaction name="filemenu"/>
    <addaction name="netmenu"/>
    <addaction name="calcmenu"/>
-   <addaction name="settingmenu"/>
    <addaction name="menutest"/>
+   <addaction name="appmenu"/>
+   <addaction name="settingmenu"/>
   </widget>
   <action name="actionupdatefromserver">
    <property name="text">
@@ -285,22 +291,22 @@ QPushButton:pressed {
   </action>
   <action name="actionlow_load">
    <property name="text">
-    <string>low_load</string>
+    <string>低级加载</string>
    </property>
   </action>
   <action name="actionstd_load">
    <property name="text">
-    <string>std_load</string>
+    <string>标准加载</string>
    </property>
   </action>
   <action name="actionclose_app">
    <property name="text">
-    <string>close_app</string>
+    <string>关闭程序</string>
    </property>
   </action>
   <action name="actionupdate_basic_data">
    <property name="text">
-    <string>update_basic_data</string>
+    <string>从网络服务器拉取信息</string>
    </property>
   </action>
   <action name="dir_login_test">
@@ -311,6 +317,21 @@ QPushButton:pressed {
   <action name="dir_main_test">
    <property name="text">
     <string>dir_main</string>
+   </property>
+  </action>
+  <action name="actiondir_main">
+   <property name="text">
+    <string>导航到主入口</string>
+   </property>
+  </action>
+  <action name="actiondir_fund_pannel">
+   <property name="text">
+    <string>导航到基金控制</string>
+   </property>
+  </action>
+  <action name="actioncall_server_update">
+   <property name="text">
+    <string>让服务器更新</string>
    </property>
   </action>
  </widget>

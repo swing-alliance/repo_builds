@@ -1,22 +1,29 @@
 QT += widgets
-
 CONFIG += c++17
-
-# You can make your code fail to compile if it uses deprecated APIs.
-# In order to do so, uncomment the following line.
-#DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
     main.cpp \
-    mainwindow.cpp
+    fund_card.cpp
 
 HEADERS += \
-    mainwindow.h
+    fund_card.h
 
 FORMS += \
-    mainwindow.ui
+    fund_card.ui
 
-# Default rules for deployment.
-qnx: target.path = /tmp/$${TARGET}/bin
-else: unix:!android: target.path = /opt/$${TARGET}/bin
-!isEmpty(target.path): INSTALLS += target
+RESOURCES += \
+    qss.qrc
+
+# ==================== CMake 库 ====================
+CMAKE_BUILD_DIR = $$PWD/../../build
+INCLUDEPATH += $$PWD/../../core/include
+INCLUDEPATH += $$PWD/../../model/include
+
+LIBS += -Wl,--start-group \
+    -L$$CMAKE_BUILD_DIR/model -lmodel \
+    -L$$CMAKE_BUILD_DIR/core -lcore \
+-Wl,--end-group
+
+win32 {
+    LIBS += -lws2_32 -lcrypt32
+}

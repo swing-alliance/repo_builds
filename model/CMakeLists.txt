@@ -9,7 +9,7 @@ add_library(model STATIC
     src/fund_model.cpp
     src/model_interpreter.cpp
     src/fund_model_cal.cpp
- src/fund_model_cal_complex.cpp)
+     src/fund_model_cal_complex.cpp)
 
 target_include_directories(model PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>

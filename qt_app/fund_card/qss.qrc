@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>../src/fund_card.qss</file>
+    </qresource>
+</RCC>
