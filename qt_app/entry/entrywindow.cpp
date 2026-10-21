@@ -21,7 +21,24 @@ EntryWindow::EntryWindow(QWidget *parent)
     this->main_page_timer->start(500);
 
     connect(this->main_page_timer,&QTimer::timeout,this,[this](){this->ui->t_label->setText(QString::fromStdString(core::getnow_string()));});
-    connect(ui->action_v_time,&QAction::triggered,this,[this](){this->t=new TimeWindow();this->t->show();});
+    connect(ui->action_v_time, &QAction::triggered, this, [this]() {
+        if (this->t != nullptr) {
+            this->t->raise();
+            this->t->activateWindow();
+            return;
+        }
+        this->t = new TimeWindow(nullptr);
+        connect(this->t, &TimeWindow::time_updated, this, [this]() {
+            if (this->g_fund_manager != nullptr) {
+                this->g_fund_manager->fast_low_level_load_data(core::funds_row_dir);
+            }
+            if (this->fund_pannel != nullptr && ui->stackedWidget->currentWidget() == this->fund_pannel) {
+                this->fund_pannel->refresh_funds_ui();
+            } else {
+                qDebug() << "当前不在基金面板，后台数据已更新，待切过来时自动刷新。";
+            }
+        });
+        connect(this->t, &QObject::destroyed, this, [this]() {this->t = nullptr;});this->t->show();});
     connect(ui->actionlow_load,&QAction::triggered,this,[this](){
         if(this->g_fund_manager==nullptr){this->g_fund_manager=new model::datas_fund_manager;}
         this->g_fund_manager->fast_low_level_load_data(core::funds_row_dir);});
@@ -58,6 +75,7 @@ void EntryWindow::dir_fund_pannel()
         ui->stackedWidget->addWidget(fund_pannel);
     }
     ui->stackedWidget->setCurrentWidget(fund_pannel);
+    fund_pannel->refresh_funds_ui();
 }
 
 

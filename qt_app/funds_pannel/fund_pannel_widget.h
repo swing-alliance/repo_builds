@@ -17,6 +17,7 @@ class fund_pannel_widget : public QWidget
 public:
     model::datas_fund_manager * g_fund_manager=nullptr;
     void connect_funds_ui();
+    void refresh_funds_ui();
     explicit fund_pannel_widget(QWidget *parent = nullptr);
     ~fund_pannel_widget() override;
 

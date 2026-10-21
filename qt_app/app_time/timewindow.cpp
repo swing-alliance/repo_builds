@@ -4,6 +4,7 @@
 #include<QString>
 #include<QRadioButton>
 #include<ctime>
+
 TimeWindow::TimeWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::TimeWindow)
@@ -35,6 +36,7 @@ TimeWindow::TimeWindow(QWidget *parent)
         }
 
         qDebug() << QString::fromStdString(core::getnow_string());
+        emit time_updated();
         this->close();
     });
 }

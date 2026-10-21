@@ -17,6 +17,9 @@ public:
     explicit TimeWindow(QWidget *parent = nullptr);
     ~TimeWindow() override;
 
+signals: // 【修正：关键字是 signals，而不是 signed】
+    void time_updated(); // 【定义一个清晰的信号】
+
 private:
     Ui::TimeWindow *ui;
 };

@@ -32,7 +32,7 @@ private slots:
     //void connect_fund_manager_ui(); //把如fund_manger连接到ui
 
 private:
-    TimeWindow * t;  //弹出来的ui
+    TimeWindow * t=nullptr;  //弹出来的ui
 
     QTimer * main_page_timer=nullptr;             //非ui
     Ui::EntryWindow *ui;          //主窗口ui

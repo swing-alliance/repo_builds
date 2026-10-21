@@ -26,7 +26,7 @@ fund_pannel_widget::fund_pannel_widget(QWidget *parent)
             bool match = search_text.isEmpty() ||
                          code.contains(search_text, Qt::CaseInsensitive) ||
                          name.contains(search_text, Qt::CaseInsensitive);
-            fm.visiable = match;
+            // 注意：这里删掉了 fm.visiable = match; 避免污染底层数据的全局状态！
             if (match) {
                 visible_cards.append(card);
             }
@@ -68,11 +68,40 @@ void fund_pannel_widget::connect_funds_ui()
     }
     qDebug()<<this->g_fund_manager->funds_list[1].fund_name<<"空?";
     for(model::fund_model &fm : this->g_fund_manager->funds_list){
-        fund_card *card = new fund_card(&fm,this);
-        card->align_info_ui(); // 确保渲染文本
-        ui->verticalcontainer->addWidget(card);
+        if(fm.visiable==true && fm.fund_valid==true){
+            fund_card *card = new fund_card(&fm,this);
+            card->align_info_ui(); // 确保渲染文本
+            ui->verticalcontainer->addWidget(card);
+        }
     }
     this->setUpdatesEnabled(true);
     QApplication::restoreOverrideCursor();
     this->setEnabled(true);
 }
+
+void fund_pannel_widget::refresh_funds_ui()
+{
+    if (!this->g_fund_manager) return;
+    for(model::fund_model &fm:this->g_fund_manager->funds_list){
+        auto pair=fm.get_split_fund_model(1);
+        if(pair.first==-1 || pair.second==-1){fm.visiable=false;}else{fm.visiable=true;}
+    }
+    this->setUpdatesEnabled(false);
+    QList<fund_card*> all_cards = this->findChildren<fund_card*>();
+    for (auto card : all_cards) {
+        card->hide();
+    }
+    for (auto card : all_cards) {
+        if (!card->the_fund_entity) continue;
+        if (card->the_fund_entity->visiable) {
+            card->show();
+        }
+    }
+    this->setUpdatesEnabled(true);
+    this->update();
+}
+
+
+
+
+
