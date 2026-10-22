@@ -18,14 +18,14 @@ public:
     model::fund_model *the_fund_entity = nullptr;
     explicit fund_card(model::fund_model *entity = nullptr, QWidget *parent = nullptr);
     ~fund_card() override;
-
-
+signals:
+    void dir_chart(model::fund_model* fund_ptr);
 private:
     Ui::fund_card *ui;
 
 protected:
     void paintEvent(QPaintEvent *event) override;
-
+    void contextMenuEvent(QContextMenuEvent *event) override;
 };
 
 
