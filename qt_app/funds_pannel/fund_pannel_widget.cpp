@@ -48,6 +48,7 @@ fund_pannel_widget::fund_pannel_widget(QWidget *parent)
         this->setUpdatesEnabled(true);
         this->update();
     });
+    connect(this,&fund_pannel_widget::need_refresh_cards_entity,this,[this](){this->refresh_cards_entity();});
 }
 
 fund_pannel_widget::~fund_pannel_widget()
@@ -60,6 +61,28 @@ fund_pannel_widget::~fund_pannel_widget()
     delete g_fund_manager;
     delete ui;
 }
+
+void fund_pannel_widget::refresh_cards_entity(){//排序后的实体底层cpp类，card会指向错乱
+    if (!this->g_fund_manager) return;
+    QList<fund_card*> all_cards = this->findChildren<fund_card*>();
+    for(auto &card:all_cards){
+        bool found = false;
+        for(auto &fm:this->g_fund_manager->funds_list){
+            if(fm.fund_code==card->fund_code){
+                card->the_fund_entity=&fm;
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            card->the_fund_entity = nullptr;
+            card->hide();
+            qDebug()<<"刷新实体出错";
+        }
+    }
+}
+
+
 
 void fund_pannel_widget::connect_funds_ui()
 {
@@ -78,7 +101,7 @@ void fund_pannel_widget::connect_funds_ui()
     qDebug()<<this->g_fund_manager->funds_list[1].fund_name<<"空?";
     for(model::fund_model &fm : this->g_fund_manager->funds_list){
         if(fm.visiable==true && fm.fund_valid==true){
-            fund_card *card = new fund_card(&fm,this);
+            fund_card *card = new fund_card(&fm,QString::fromStdString(fm.fund_code),this);
             card->align_info_ui();
             connect(card, &fund_card::dir_chart, this, &fund_pannel_widget::on_card_dir_chart);  //把card的信号绑定自己，自己被上层监听中
             ui->verticalcontainer->addWidget(card);
@@ -89,13 +112,13 @@ void fund_pannel_widget::connect_funds_ui()
     this->setEnabled(true);
 }
 
+
 void fund_pannel_widget::refresh_funds_ui()
 {
     if (!this->g_fund_manager) return;
     this->setEnabled(false);
     QApplication::setOverrideCursor(Qt::WaitCursor);
     this->setUpdatesEnabled(false);
-
     for (model::fund_model &fm : this->g_fund_manager->funds_list) {
         auto pair = fm.get_split_fund_model(1);
         if (pair.first == -1 || pair.second == -1) {
@@ -105,23 +128,27 @@ void fund_pannel_widget::refresh_funds_ui()
         }
     }
     QList<fund_card*> all_cards = this->findChildren<fund_card*>();
-    QList<fund_card*> visible_cards;
-    for (auto card : all_cards) {
-        if (!card->the_fund_entity) continue;
-        auto &fm = *(card->the_fund_entity);
-        if (fm.visiable && fm.fund_valid) {
-            visible_cards.append(card);
-        }
-    }
     for (auto card : all_cards) {
         ui->verticalcontainer->removeWidget(card);
         card->hide();
     }
-    for (auto card : visible_cards) {
-        card->show();
-    }
-    for (auto card : visible_cards) {
-        ui->verticalcontainer->addWidget(card);
+    for (model::fund_model &fm : this->g_fund_manager->funds_list) {
+        fund_card* target_card = nullptr;
+        for (auto card : all_cards) {
+            if (!card->the_fund_entity) continue;
+            if (card->the_fund_entity->fund_code == fm.fund_code) {
+                target_card = card;
+                break;
+            }
+        }
+
+        if (target_card) {
+            target_card->the_fund_entity = &fm;
+            if (fm.visiable && fm.fund_valid) {
+                target_card->show();
+                ui->verticalcontainer->addWidget(target_card);
+            }
+        }
     }
     this->setUpdatesEnabled(true);
     QApplication::restoreOverrideCursor();

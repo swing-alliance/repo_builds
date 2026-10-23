@@ -12,10 +12,11 @@ void fund_card::align_info_ui()
         ui->name_label->setText(QString::fromStdString(this->the_fund_entity->fund_name));
     }
 }
-fund_card::fund_card(model::fund_model *entity, QWidget *parent)
+fund_card::fund_card(model::fund_model *entity,QString fund_code, QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::fund_card)
-    , the_fund_entity(entity) // 初始化时直接赋指针
+    , the_fund_entity(entity) // 初始化时直接赋指针一次，排序后失效
+    ,fund_code(fund_code)
 {
     ui->setupUi(this);
     this->setStyleSheet(

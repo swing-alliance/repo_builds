@@ -15,8 +15,9 @@ class fund_card : public QWidget
 
 public:
     void align_info_ui();    // 对齐数据和 ui
+    QString fund_code;
     model::fund_model *the_fund_entity = nullptr;
-    explicit fund_card(model::fund_model *entity = nullptr, QWidget *parent = nullptr);
+    explicit fund_card(model::fund_model *entity = nullptr,QString fund_code="", QWidget *parent = nullptr);
     ~fund_card() override;
 signals:
     void dir_chart(model::fund_model* fund_ptr);

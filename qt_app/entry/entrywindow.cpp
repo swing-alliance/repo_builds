@@ -22,7 +22,7 @@ EntryWindow::EntryWindow(QWidget *parent)
     this->main_page_timer->start(500);
 
     connect(this->main_page_timer,&QTimer::timeout,this,[this](){this->ui->t_label->setText(QString::fromStdString(core::getnow_string()));});
-    connect(ui->action_v_time, &QAction::triggered, this, [this]() {
+    connect(ui->action_v_time, &QAction::triggered, this, [this]() {   //调用虚拟时间实现
         if (this->t != nullptr) {
             this->t->raise();
             this->t->activateWindow();
@@ -49,16 +49,20 @@ EntryWindow::EntryWindow(QWidget *parent)
     connect(ui->actiondir_main,&QAction::triggered,this,[this](){this->dir_main_page();});           //导航到主的按钮
     connect(ui->actiondir_fund_pannel,&QAction::triggered,this,[this](){this->dir_fund_pannel();});  //导航到鸡控制办的按钮
     connect(ui->instant_start_btn, &QPushButton::clicked, this, [this](){   //快速开始
-        ui->actionstd_load->setEnabled(false);
-        ui->actiondir_fund_pannel->setEnabled(false);
-        ui->actionstd_load->trigger();
+        if(this->g_fund_manager==nullptr){ui->actionstd_load->trigger();}
         ui->actiondir_fund_pannel->trigger();
-        ui->actionstd_load->setEnabled(true);
-        ui->actiondir_fund_pannel->setEnabled(true);
     });
-    connect(ui->action_cal_resort,&QAction::triggered,this,[this](){
-        // cal_param_Widget * cal_win=new cal_param_Widget(this->g_fund_manager,this);
-        // cal_win->show();
+    connect(ui->action_cal_resort,&QAction::triggered,this,[this](){      //调用计算和排序
+        auto *cal_win = new cal_param_Widget(*this->g_fund_manager, this);
+        cal_win->setWindowFlags(Qt::Window);
+        cal_win->setAttribute(Qt::WA_DeleteOnClose);
+        connect(cal_win, &cal_param_Widget::param_accepted, this, [this]() {
+            if(this->fund_pannel!=nullptr){
+                emit this->fund_pannel->need_refresh_cards_entity();
+            }
+            if(ui->stackedWidget->currentWidget()==this->fund_pannel){this->fund_pannel->refresh_funds_ui();}
+        });
+        cal_win->show();
     });
     //======测试界=====
 

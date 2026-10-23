@@ -18,6 +18,8 @@ public:
     explicit cal_param_Widget(model::datas_fund_manager& fmm,QWidget *parent = nullptr);
     ~cal_param_Widget() override;
     model::sort_options get_sort_option();
+signals:
+    void param_accepted();
 private:
     Ui::cal_param_Widget *ui;
     QButtonGroup* m_radioGroup=new QButtonGroup;

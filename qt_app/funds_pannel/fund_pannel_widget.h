@@ -23,9 +23,10 @@ public:
     ~fund_pannel_widget() override;
 
 signals:
+    void need_refresh_cards_entity();
     void on_card_dir_chart(model::fund_model* fund_ptr);
 private slots:
-
+    void refresh_cards_entity();
 private:
     Ui::fund_pannel_widget *ui;
     ChartWidget* chart_widget = nullptr;

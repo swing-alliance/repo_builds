@@ -34,7 +34,11 @@ cal_param_Widget::cal_param_Widget(model::datas_fund_manager& fmm,QWidget *paren
         fmm.fast_get_all_cal_results(cal_days,8);   //先算完数据到内存
         fmm.sort_by_options(option);   //原地排序
         qDebug()<<"排序结束了，第一是"<<fmm.funds_list[0].fund_code;
+        emit param_accepted();
+        this->close();
+        this->deleteLater();
     });
+    connect(ui->no_btn,&QPushButton::clicked,this,[this](){this->close();this->deleteLater();});
 
 }
 
