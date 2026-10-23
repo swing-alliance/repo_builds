@@ -242,13 +242,7 @@ QPushButton:pressed {
      <string>计算</string>
     </property>
     <addaction name="action_v_time"/>
-   </widget>
-   <widget class="QMenu" name="menutest">
-    <property name="title">
-     <string>test</string>
-    </property>
-    <addaction name="dir_login_test"/>
-    <addaction name="dir_main_test"/>
+    <addaction name="action_cal_resort"/>
    </widget>
    <widget class="QMenu" name="appmenu">
     <property name="title">
@@ -265,7 +259,6 @@ QPushButton:pressed {
    <addaction name="filemenu"/>
    <addaction name="netmenu"/>
    <addaction name="calcmenu"/>
-   <addaction name="menutest"/>
    <addaction name="appmenu"/>
    <addaction name="settingmenu"/>
   </widget>
@@ -332,6 +325,11 @@ QPushButton:pressed {
   <action name="actioncall_server_update">
    <property name="text">
     <string>让服务器更新</string>
+   </property>
+  </action>
+  <action name="action_cal_resort">
+   <property name="text">
+    <string>计算和重排</string>
    </property>
   </action>
  </widget>

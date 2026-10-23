@@ -8,7 +8,8 @@ SOURCES += \
     $$PWD/../app_time/timewindow.cpp \
     $$PWD/../funds_pannel/fund_pannel_widget.cpp \
     $$PWD/../fund_card/fund_card.cpp \
-    $$PWD/../chart_widget/chartwidget.cpp
+    $$PWD/../chart_widget/chartwidget.cpp \
+    $$PWD/../pop_widgets/cal_param_widget.cpp
 
 HEADERS += \
     entrywindow.h \
@@ -16,20 +17,23 @@ HEADERS += \
     $$PWD/../funds_pannel/fund_pannel_widget.h \
     $$PWD/../fund_card/fund_card.h \
     $$PWD/../chart_widget/chartwidget.h \
-    $$PWD/../chart_widget/simpleplotwidget.h
+    $$PWD/../chart_widget/simpleplotwidget.h \
+    $$PWD/../pop_widgets/cal_param_widget.h
 
 FORMS += \
     entrywindow.ui \
     $$PWD/../app_time/timewindow.ui \
     $$PWD/../funds_pannel/fund_pannel_widget.ui \
     $$PWD/../fund_card/fund_card.ui \
-    $$PWD/../chart_widget/chartwidget.ui
+    $$PWD/../chart_widget/chartwidget.ui \
+    $$PWD/../pop_widgets/cal_param_widget.ui
 
 # 头文件路径
 INCLUDEPATH += $$PWD/../app_time
 INCLUDEPATH += $$PWD/../funds_pannel
 INCLUDEPATH += $$PWD/../fund_card
 INCLUDEPATH += $$PWD/../chart_widget
+INCLUDEPATH += $$PWD/../pop_widgets
 
 # CMake 库保持不变
 CMAKE_BUILD_DIR = $$PWD/../../build
@@ -53,5 +57,4 @@ win32 {
     LIBS += -lws2_32 -lcrypt32
 }
 
-RESOURCES += \
-    pack.qrc
+RESOURCES += pack.qrc

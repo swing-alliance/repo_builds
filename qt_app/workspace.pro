@@ -6,5 +6,6 @@ SUBDIRS += \
     chart_widget \
     fund_card \
     funds_pannel \
-    entry
+    entry \
+    pop_widgets
 # funds_pannel.depends = fund_card

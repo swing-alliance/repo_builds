@@ -12,6 +12,7 @@
 
 #include <model/fund_model.h>
 #include "fund_pannel_widget.h"
+#include "cal_param_widget.h"
 EntryWindow::EntryWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::EntryWindow)
@@ -42,12 +43,23 @@ EntryWindow::EntryWindow(QWidget *parent)
     connect(ui->actionlow_load,&QAction::triggered,this,[this](){
         if(this->g_fund_manager==nullptr){this->g_fund_manager=new model::datas_fund_manager;}
         this->g_fund_manager->fast_low_level_load_data(core::funds_row_dir);});
-    connect(ui->actionstd_load,&QAction::triggered,this,[this](){
+    connect(ui->actionstd_load,&QAction::triggered,this,[this](){                                   //标准加载的按钮
         if(this->g_fund_manager==nullptr){this->g_fund_manager=new model::datas_fund_manager;}
         this->g_fund_manager->std_load_data(core::funds_row_dir);});
-    connect(ui->actiondir_main,&QAction::triggered,this,[this](){this->dir_main_page();});
-    connect(ui->actiondir_fund_pannel,&QAction::triggered,this,[this](){this->dir_fund_pannel();});
-
+    connect(ui->actiondir_main,&QAction::triggered,this,[this](){this->dir_main_page();});           //导航到主的按钮
+    connect(ui->actiondir_fund_pannel,&QAction::triggered,this,[this](){this->dir_fund_pannel();});  //导航到鸡控制办的按钮
+    connect(ui->instant_start_btn, &QPushButton::clicked, this, [this](){   //快速开始
+        ui->actionstd_load->setEnabled(false);
+        ui->actiondir_fund_pannel->setEnabled(false);
+        ui->actionstd_load->trigger();
+        ui->actiondir_fund_pannel->trigger();
+        ui->actionstd_load->setEnabled(true);
+        ui->actiondir_fund_pannel->setEnabled(true);
+    });
+    connect(ui->action_cal_resort,&QAction::triggered,this,[this](){
+        // cal_param_Widget * cal_win=new cal_param_Widget(this->g_fund_manager,this);
+        // cal_win->show();
+    });
     //======测试界=====
 
 
@@ -64,7 +76,6 @@ void EntryWindow::dir_fund_pannel()
 {
     if (!fund_pannel) {
         fund_pannel = new fund_pannel_widget(this);
-        connect(fund_pannel,&fund_pannel_widget::on_pop_chart_here,this,[this](){this->dir_fund_pannel();});
         connect(fund_pannel, &fund_pannel_widget::on_card_dir_chart,this, [this](model::fund_model* fund_ptr) {
                     if (!fund_ptr) return;
                     if (chart_widget) {

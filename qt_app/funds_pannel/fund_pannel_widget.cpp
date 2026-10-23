@@ -52,7 +52,6 @@ fund_pannel_widget::fund_pannel_widget(QWidget *parent)
 
 fund_pannel_widget::~fund_pannel_widget()
 {
-    // 关闭图表窗口，防止野指针，不再delete chart_widget（WA_DeleteOnClose自动释放）
     if(chart_widget)
     {
         chart_widget->close();
@@ -81,7 +80,7 @@ void fund_pannel_widget::connect_funds_ui()
         if(fm.visiable==true && fm.fund_valid==true){
             fund_card *card = new fund_card(&fm,this);
             card->align_info_ui();
-            connect(card, &fund_card::dir_chart, this, &fund_pannel_widget::on_card_dir_chart);
+            connect(card, &fund_card::dir_chart, this, &fund_pannel_widget::on_card_dir_chart);  //把card的信号绑定自己，自己被上层监听中
             ui->verticalcontainer->addWidget(card);
         }
     }
@@ -130,10 +129,4 @@ void fund_pannel_widget::refresh_funds_ui()
     this->update();
 }
 
-// void fund_pannel_widget::on_card_dir_chart(model::fund_model* fund_ptr)
-// {
-//     if(!fund_ptr) return;
-//     chart_widget = new ChartWidget(fund_ptr,QString::fromStdString(fund_ptr->fund_name),QString::fromStdString(fund_ptr->fund_code) ,nullptr);
-//     connect(chart_widget,&ChartWidget::pop_here,this,[this](){this->on_pop_chart_here();});
-//     chart_widget->show();
-// }
+

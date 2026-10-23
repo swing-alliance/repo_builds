@@ -5,7 +5,7 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    fund_card w;
-    w.show();
+    // fund_card w;
+    // w.show();
     return QApplication::exec();
 }

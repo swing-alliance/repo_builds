@@ -24,7 +24,6 @@ public:
 
 signals:
     void on_card_dir_chart(model::fund_model* fund_ptr);
-    void on_pop_chart_here();
 private slots:
 
 private:
