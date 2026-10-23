@@ -8,6 +8,7 @@
 #include <model/fund_model.h>
 #include<QLineEdit>
 
+#include<core//paths.h>
 
 fund_pannel_widget::fund_pannel_widget(QWidget *parent)
     : QWidget(parent)
@@ -62,6 +63,17 @@ fund_pannel_widget::~fund_pannel_widget()
     delete ui;
 }
 
+void fund_pannel_widget::init_v_sim_pack()
+{
+    if(this->g_fund_manager==nullptr){this->g_fund_manager=new model::datas_fund_manager;this->g_fund_manager->std_load_data(core::funds_row_dir);}
+    if(v_sim_pack==nullptr){
+        v_sim_pack =new v_sim::v_sim_pack;
+        v_sim_pack->v_account.ac_id="user";
+        v_sim_pack->v_account.ac_val=10000;
+        v_sim_pack->v_global_tracker.fund_datasource=*(this->g_fund_manager);     //这是底层设计失误造成拷贝了，内存多了写
+    }
+}
+
 void fund_pannel_widget::refresh_cards_entity(){//排序后的实体底层cpp类，card会指向错乱
     if (!this->g_fund_manager) return;
     QList<fund_card*> all_cards = this->findChildren<fund_card*>();
@@ -80,6 +92,18 @@ void fund_pannel_widget::refresh_cards_entity(){//排序后的实体底层cpp类
             qDebug()<<"刷新实体出错";
         }
     }
+}
+
+void fund_pannel_widget::do_v_buy(float val, QString fund_code)
+{
+    bool ok=this->v_sim_pack->v_account.v_buy_fund(v_sim_pack->v_global_tracker,fund_code.toStdString(),val);
+    if(!ok){qDebug()<<"虚拟操作失败";}
+}
+
+void fund_pannel_widget::do_v_sell(float ratio, QString fund_code)
+{
+    bool ok=this->v_sim_pack->v_account.v_buy_fund(v_sim_pack->v_global_tracker,fund_code.toStdString(),ratio);
+    if(!ok){qDebug()<<"虚拟操作失败";}
 }
 
 
@@ -104,6 +128,8 @@ void fund_pannel_widget::connect_funds_ui()
             fund_card *card = new fund_card(&fm,QString::fromStdString(fm.fund_code),this);
             card->align_info_ui();
             connect(card, &fund_card::dir_chart, this, &fund_pannel_widget::on_card_dir_chart);  //把card的信号绑定自己，自己被上层监听中
+            connect(card, &fund_card::buy_me, this, [this](float val, QString fund_code) {this->do_v_buy(val, fund_code);});
+            connect(card, &fund_card::sell_me, this, [this](float ratio, QString fund_code) {this->do_v_sell(ratio, fund_code);});
             ui->verticalcontainer->addWidget(card);
         }
     }

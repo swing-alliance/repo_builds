@@ -17,6 +17,14 @@ namespace v_sim {
 		void v_jump_next_trading_day(int days=1);    //稳定的跳跃到下一个交易日
 	};
 
+
+	class v_sim_pack{
+		public:
+		v_account v_account;
+		v_global_tracker v_global_tracker;
+		v_brokerage v_brokerage;
+	};
+
 }
 
 

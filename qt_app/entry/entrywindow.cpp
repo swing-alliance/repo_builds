@@ -9,10 +9,15 @@
 #include<virtual/v_app.h>
 #include <timewindow.h>
 #include<QAction>
-
+#include<virtual/v_account.h>
+#include<virtual/v_tracker.h>
+#include<virtual/v_brokerage.h>
+#include<virtual/v_app.h>
 #include <model/fund_model.h>
 #include "fund_pannel_widget.h"
 #include "cal_param_widget.h"
+
+
 EntryWindow::EntryWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::EntryWindow)
@@ -35,12 +40,43 @@ EntryWindow::EntryWindow(QWidget *parent)
             }
             if (this->fund_pannel != nullptr && ui->stackedWidget->currentWidget() == this->fund_pannel) {
                 this->fund_pannel->refresh_funds_ui();
-            } else {
+            }else if (this->fund_pannel != nullptr && ui->stackedWidget->currentWidget() == this->chart_widget) {
+                ChartWidget *current_chart = qobject_cast<ChartWidget*>(ui->stackedWidget->currentWidget());
+                if (current_chart && current_chart->fm) {
+                    std::string target_code = current_chart->fm->fund_code;
+                    model::fund_model* fresh_fund_ptr = nullptr;
+                    if (this->g_fund_manager != nullptr) {
+                        for (auto &fm : this->g_fund_manager->funds_list) {
+                            if (fm.fund_code == target_code) {
+                                fresh_fund_ptr = &fm;
+                                break;
+                            }
+                        }
+                    }
+                    if (fresh_fund_ptr != nullptr) {
+                        ui->stackedWidget->removeWidget(this->chart_widget);
+                        this->chart_widget->deleteLater();
+                        this->chart_widget = new ChartWidget(
+                            fresh_fund_ptr,
+                            QString::fromStdString(fresh_fund_ptr->fund_name),
+                            QString::fromStdString(fresh_fund_ptr->fund_code),
+                            this
+                            );
+
+                        connect(this->chart_widget, &ChartWidget::pop_here, this, [this]() {
+                            this->dir_fund_pannel();
+                        });
+                        ui->stackedWidget->addWidget(this->chart_widget);
+                        ui->stackedWidget->setCurrentWidget(this->chart_widget);
+                    }
+                }
+            }
+            else {
                 qDebug() << "当前不在基金面板，后台数据已更新，待切过来时自动刷新。";
             }
         });
         connect(this->t, &QObject::destroyed, this, [this]() {this->t = nullptr;});this->t->show();});
-    connect(ui->actionlow_load,&QAction::triggered,this,[this](){
+    connect(ui->actionlow_load,&QAction::triggered,this,[this](){                                   //低级加载
         if(this->g_fund_manager==nullptr){this->g_fund_manager=new model::datas_fund_manager;}
         this->g_fund_manager->fast_low_level_load_data(core::funds_row_dir);});
     connect(ui->actionstd_load,&QAction::triggered,this,[this](){                                   //标准加载的按钮
@@ -50,8 +86,7 @@ EntryWindow::EntryWindow(QWidget *parent)
     connect(ui->actiondir_fund_pannel,&QAction::triggered,this,[this](){this->dir_fund_pannel();});  //导航到鸡控制办的按钮
     connect(ui->instant_start_btn, &QPushButton::clicked, this, [this](){   //快速开始
         if(this->g_fund_manager==nullptr){ui->actionstd_load->trigger();}
-        ui->actiondir_fund_pannel->trigger();
-    });
+        ui->actiondir_fund_pannel->trigger();});
     connect(ui->action_cal_resort,&QAction::triggered,this,[this](){      //调用计算和排序
         auto *cal_win = new cal_param_Widget(*this->g_fund_manager, this);
         cal_win->setWindowFlags(Qt::Window);
@@ -104,5 +139,7 @@ void EntryWindow::dir_fund_pannel()
     ui->stackedWidget->setCurrentWidget(fund_pannel);
     fund_pannel->refresh_funds_ui();
 }
+
+
 
 

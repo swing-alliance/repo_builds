@@ -40,7 +40,7 @@ namespace v_sim {
 		else if (log.type == abt_stock) { std::cout << "暂未实现" << std::endl; return false; }
 		return false;
 	}
-
+	//创建虚拟记录
 	bool v_global_tracker::v_mk_sell_trade_log(std::string ac_id, std::string symbol, int type,float sell_ratio) {
 		trade_log log;
 		log.ac_id = ac_id;

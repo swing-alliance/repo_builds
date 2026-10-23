@@ -46,6 +46,8 @@ void fund_card::contextMenuEvent(QContextMenuEvent *event)
     QMenu menu(this);
     QAction *actionRedirect = menu.addAction("转到图");
     QAction *actionMark = menu.addAction("标记");
+    QAction * v_buy=menu.addAction("虚拟买");
+    QAction * v_sell=menu.addAction("虚拟卖");
     //menu.addSeparator(); // 分割线
     QAction *selectedAction = menu.exec(event->globalPos());
     this->style()->unpolish(this);
@@ -55,6 +57,10 @@ void fund_card::contextMenuEvent(QContextMenuEvent *event)
         emit dir_chart(this->the_fund_entity);
     } else if (selectedAction == actionMark) {
         // TODO
+    }else if(selectedAction==v_buy){
+
+    }else if(selectedAction==v_sell){
+
     }
 }
 

@@ -21,12 +21,15 @@ public:
     ~fund_card() override;
 signals:
     void dir_chart(model::fund_model* fund_ptr);
+    void buy_me(float val,QString fund_code);
+    void sell_me(float ratio,QString fund_code);
 private:
     Ui::fund_card *ui;
 
 protected:
     void paintEvent(QPaintEvent *event) override;
     void contextMenuEvent(QContextMenuEvent *event) override;
+
 };
 
 
