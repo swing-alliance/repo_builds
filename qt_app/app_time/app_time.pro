@@ -25,20 +25,19 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 CMAKE_BUILD_DIR = $$PWD/../../build
 
 INCLUDEPATH += $$PWD/../../core/include
-# INCLUDEPATH += $$PWD/../../model/include
+INCLUDEPATH += $$PWD/../../model/include
 # INCLUDEPATH += $$PWD/../../net/include
 # INCLUDEPATH += $$PWD/../../sqlite3/include
-# INCLUDEPATH += $$PWD/../../virtual/include
-# # 【新增】别忘了 io_medi 的头文件路径！
+INCLUDEPATH += $$PWD/../../virtual/include
 # INCLUDEPATH += $$PWD/../../io_medi/include
 
 # 使用 --start-group 彻底解决静态库循环依赖或顺序导致的链接报错
 LIBS += -Wl,--start-group \
-    # -L$$CMAKE_BUILD_DIR/model -lmodel \
+    -L$$CMAKE_BUILD_DIR/model -lmodel \
     # -L$$CMAKE_BUILD_DIR/io_medi -lio_medi \
     -L$$CMAKE_BUILD_DIR/core -lcore \
     # -L$$CMAKE_BUILD_DIR/net -lnet \
-    # -L$$CMAKE_BUILD_DIR/virtual -lvirtual \
+    -L$$CMAKE_BUILD_DIR/virtual -lvirtual \
     # -L$$CMAKE_BUILD_DIR/sqlite3 -lsqlite3 \
 -Wl,--end-group
 

@@ -175,7 +175,6 @@ void fund_pannel_widget::refresh_funds_ui()
                 break;
             }
         }
-
         if (target_card) {
             target_card->the_fund_entity = &fm;
             if (fm.visiable && fm.fund_valid) {

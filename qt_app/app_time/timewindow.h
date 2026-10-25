@@ -2,7 +2,7 @@
 #define TIMEWINDOW_H
 
 #include <QMainWindow>
-
+#include<virtual/v_app.h>
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class TimeWindow;
@@ -14,11 +14,11 @@ class TimeWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit TimeWindow(QWidget *parent = nullptr);
+    explicit TimeWindow(v_sim::v_sim_pack * v_pack_ptr=nullptr,QWidget *parent = nullptr);
     ~TimeWindow() override;
 
-signals: // 【修正：关键字是 signals，而不是 signed】
-    void time_updated(); // 【定义一个清晰的信号】
+signals:
+    void time_updated();
 
 private:
     Ui::TimeWindow *ui;
