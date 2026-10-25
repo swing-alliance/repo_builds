@@ -22,35 +22,60 @@ fund_pannel_widget::fund_pannel_widget(QWidget *parent)
         this->init_v_sim_pack();
     });
 
-    // 【修改点】：这里通过直接设置 visible 过滤，不再做 remove/add 操作，从而完美保护排序
+    // 搜索过滤槽函数：严格按 g_fund_manager 数据源原生顺序组织，采用批量刷新，丝滑秒开不卡顿
     connect(ui->lineEdit, &QLineEdit::textChanged, this, [this](const QString &text) {
         if (!this->g_fund_manager) return;
         QString search_text = text.trimmed().replace(u'（', u'(').replace(u'）', u')');
 
-        QList<fund_card*> all_cards = this->findChildren<fund_card*>();
-
-        this->setUpdatesEnabled(false);
-        for (auto card : all_cards) {
-            if (!card->the_fund_entity) {
-                card->setVisible(false);
-                continue;
+        // 1. 建立哈希映射，实现 O(1) 快速查找
+        QHash<std::string, fund_card*> code_to_card;
+        for (auto card : this->findChildren<fund_card*>()) {
+            if (card && card->the_fund_entity) {
+                code_to_card[card->the_fund_entity->fund_code] = card;
             }
+        }
 
-            auto &fm = *(card->the_fund_entity);
+        QList<fund_card*> visible_cards;
+        QList<fund_card*> hidden_cards;
 
-            // 基础条件：必须是本身可见且有效的基金
+        // 2. 严格按 g_fund_manager->funds_list 的原生顺序分类收集
+        for (auto &fm : this->g_fund_manager->funds_list) {
+            auto it = code_to_card.find(fm.fund_code);
+            if (it == code_to_card.end()) continue;
+            fund_card *card = it.value();
+
             bool base_valid = fm.visiable && fm.fund_valid;
-
-            // 搜索条件：代号或名称匹配
             QString code = QString::fromStdString(fm.fund_code);
             QString name = QString::fromStdString(fm.fund_name);
             bool matches_search = search_text.isEmpty() ||
                                   code.contains(search_text, Qt::CaseInsensitive) ||
                                   name.contains(search_text, Qt::CaseInsensitive);
 
-            // 同时满足基础条件和搜索条件才显示，否则隐藏（不改变 Layout 布局顺序）
-            card->setVisible(base_valid && matches_search);
+            if (base_valid && matches_search) {
+                visible_cards.append(card);
+            } else {
+                hidden_cards.append(card);
+            }
         }
+
+        // 3. 开启性能锁，准备批量刷新
+        this->setUpdatesEnabled(false);
+
+        for (auto card : hidden_cards) {
+            card->hide();
+        }
+
+        QLayoutItem *item;
+        while ((item = ui->verticalcontainer->itemAt(0)) != nullptr) {
+            ui->verticalcontainer->removeItem(item);
+            delete item;
+        }
+
+        for (auto card : visible_cards) {
+            card->show();
+            ui->verticalcontainer->addWidget(card);
+        }
+
         this->setUpdatesEnabled(true);
         this->update();
     });
@@ -81,7 +106,7 @@ void fund_pannel_widget::init_v_sim_pack()
         v_sim_pack = new v_sim::v_sim_pack;
         v_sim_pack->v_account.ac_id = "user";
         v_sim_pack->v_account.ac_val = 10000;
-        v_sim_pack->v_global_tracker.fund_datasource = *(this->g_fund_manager); // 底层设计引起的拷贝
+        v_sim_pack->v_global_tracker.fund_datasource = *(this->g_fund_manager); // 底层设计失误造成拷贝了，内存多了写
     }
     if(v_pannel == nullptr){
         v_pannel = new v_pack_pannel(this->v_sim_pack);
@@ -172,28 +197,39 @@ void fund_pannel_widget::refresh_funds_ui()
     }
 
     QList<fund_card*> all_cards = this->findChildren<fund_card*>();
+    QHash<std::string, fund_card*> code_to_card;
     for (auto card : all_cards) {
-        ui->verticalcontainer->removeWidget(card);
-        card->hide();
+        if (card && card->the_fund_entity) {
+            code_to_card[card->the_fund_entity->fund_code] = card;
+        }
     }
 
+    QLayoutItem *item;
+    while ((item = ui->verticalcontainer->itemAt(0)) != nullptr) {
+        ui->verticalcontainer->removeItem(item);
+        delete item;
+    }
+
+    QList<fund_card*> visible_cards;
     for (model::fund_model &fm : this->g_fund_manager->funds_list) {
-        fund_card* target_card = nullptr;
-        for (auto card : all_cards) {
-            if (!card->the_fund_entity) continue;
-            if (card->the_fund_entity->fund_code == fm.fund_code) {
-                target_card = card;
-                break;
-            }
-        }
-        if (target_card) {
-            target_card->the_fund_entity = &fm;
-            if (fm.visiable && fm.fund_valid) {
-                target_card->show();
-                ui->verticalcontainer->addWidget(target_card);
-            }
+        auto it = code_to_card.find(fm.fund_code);
+        if (it == code_to_card.end()) continue;
+
+        fund_card* target_card = it.value();
+        target_card->the_fund_entity = &fm; // 刷新实体指针
+
+        if (fm.visiable && fm.fund_valid) {
+            visible_cards.append(target_card);
+        } else {
+            target_card->hide();
         }
     }
+
+    for (auto card : visible_cards) {
+        card->show();
+        ui->verticalcontainer->addWidget(card);
+    }
+
     this->setUpdatesEnabled(true);
     QApplication::restoreOverrideCursor();
     this->setEnabled(true);
