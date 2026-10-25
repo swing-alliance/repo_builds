@@ -21,18 +21,13 @@ fund_pannel_widget::fund_pannel_widget(QWidget *parent)
     connect(ui->lineEdit, &QLineEdit::textChanged, this, [this](const QString &text) {
         if (!this->g_fund_manager) return;
         QString search_text = text.trimmed().replace(u'（', u'(').replace(u'）', u')');
-
         QList<fund_card*> all_cards = this->findChildren<fund_card*>();
         QList<fund_card*> visible_cards;
-
         for (auto card : all_cards) {
             if (!card->the_fund_entity) continue;
             auto &fm = *(card->the_fund_entity);
             QString code = QString::fromStdString(fm.fund_code);
-
-            // 关键修复：使用 fromLocal8Bit 解决中文 fund_name 编码不匹配问题
-            QString name = QString::fromLocal8Bit(fm.fund_name.c_str());
-
+            QString name = QString::fromStdString(fm.fund_name);
             bool match = search_text.isEmpty() ||
                          code.contains(search_text, Qt::CaseInsensitive) ||
                          name.contains(search_text, Qt::CaseInsensitive);
