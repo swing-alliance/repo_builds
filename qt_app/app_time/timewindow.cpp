@@ -82,8 +82,6 @@ TimeWindow::TimeWindow(v_sim::v_sim_pack * v_pack_ptr, QWidget *parent)
                 qDebug() << "Set custom offset by dateTimeEdit:" << offset;
             }
         }
-
-        // 3. 统一收尾
         QString final_str = QString::fromStdString(core::getnow_string());
         qDebug() << "最终时间:" << final_str;
         emit time_updated();
