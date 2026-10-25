@@ -9,6 +9,7 @@
 #include <QLineEdit>
 #include "v_pack_pannel.h"
 #include <core/paths.h>
+#include <QTimer>
 
 fund_pannel_widget::fund_pannel_widget(QWidget *parent)
     : QWidget(parent)
@@ -22,27 +23,40 @@ fund_pannel_widget::fund_pannel_widget(QWidget *parent)
         this->init_v_sim_pack();
     });
 
-    // 搜索过滤槽函数：严格按 g_fund_manager 数据源原生顺序组织，采用批量刷新，丝滑秒开不卡顿
-    connect(ui->lineEdit, &QLineEdit::textChanged, this, [this](const QString &text) {
+    // 初始化防抖定时器（100ms 延迟，快速删除/输入时会不断重置，直达最终结果）
+    m_search_timer = new QTimer(this);
+    m_search_timer->setSingleShot(true);
+    m_search_timer->setInterval(100);
+
+    // 防抖超时后执行最终的高性能过滤与批量重排
+    connect(m_search_timer, &QTimer::timeout, this, [this]() {
         if (!this->g_fund_manager) return;
-        QString search_text = text.trimmed().replace(u'（', u'(').replace(u'）', u')');
+        QString search_text = ui->lineEdit->text().trimmed().replace(u'（', u'(').replace(u'）', u')');
 
         // 1. 建立哈希映射，实现 O(1) 快速查找
         QHash<std::string, fund_card*> code_to_card;
         for (auto card : this->findChildren<fund_card*>()) {
-            if (card && card->the_fund_entity) {
-                code_to_card[card->the_fund_entity->fund_code] = card;
+            if (card) {
+                std::string code = card->fund_code.toStdString();
+                if (code.empty() && card->the_fund_entity) {
+                    code = card->the_fund_entity->fund_code;
+                }
+                if (!code.empty()) {
+                    code_to_card[code] = card;
+                }
             }
         }
 
         QList<fund_card*> visible_cards;
         QList<fund_card*> hidden_cards;
 
-        // 2. 严格按 g_fund_manager->funds_list 的原生顺序分类收集
+        // 2. 严格按 g_fund_manager->funds_list 的原生顺序分类收集，并实时修正指针地址
         for (auto &fm : this->g_fund_manager->funds_list) {
             auto it = code_to_card.find(fm.fund_code);
             if (it == code_to_card.end()) continue;
             fund_card *card = it.value();
+
+            card->the_fund_entity = &fm; // 实时对齐指针，防止地址错位
 
             bool base_valid = fm.visiable && fm.fund_valid;
             QString code = QString::fromStdString(fm.fund_code);
@@ -80,9 +94,14 @@ fund_pannel_widget::fund_pannel_widget(QWidget *parent)
         this->update();
     });
 
+    // 文本变化时仅启动防抖定时器，打字或连续删除时不会卡顿，停下或最终完成时瞬间输出结果
+    connect(ui->lineEdit, &QLineEdit::textChanged, this, [this](const QString &text) {
+        m_search_timer->start();
+    });
+
     connect(this, &fund_pannel_widget::need_refresh_cards_entity, this, [this](){
         this->refresh_cards_entity();
-    });   // 刷新 card 和实体的地址
+    });
 }
 
 fund_pannel_widget::~fund_pannel_widget()
@@ -106,7 +125,7 @@ void fund_pannel_widget::init_v_sim_pack()
         v_sim_pack = new v_sim::v_sim_pack;
         v_sim_pack->v_account.ac_id = "user";
         v_sim_pack->v_account.ac_val = 10000;
-        v_sim_pack->v_global_tracker.fund_datasource = *(this->g_fund_manager); // 底层设计失误造成拷贝了，内存多了写
+        v_sim_pack->v_global_tracker.fund_datasource = *(this->g_fund_manager);
     }
     if(v_pannel == nullptr){
         v_pannel = new v_pack_pannel(this->v_sim_pack);
@@ -114,13 +133,15 @@ void fund_pannel_widget::init_v_sim_pack()
     }
 }
 
-void fund_pannel_widget::refresh_cards_entity() { // 排序后的实体底层 cpp 类，card 会指向错乱
+void fund_pannel_widget::refresh_cards_entity() {
     if (!this->g_fund_manager) return;
     QList<fund_card*> all_cards = this->findChildren<fund_card*>();
     for(auto &card : all_cards){
+        if (!card) continue;
         bool found = false;
         for(auto &fm : this->g_fund_manager->funds_list){
-            if(fm.fund_code == card->fund_code){
+            if(fm.fund_code == card->fund_code.toStdString() ||
+                (card->the_fund_entity && fm.fund_code == card->the_fund_entity->fund_code)){
                 card->the_fund_entity = &fm;
                 found = true;
                 break;
@@ -129,7 +150,7 @@ void fund_pannel_widget::refresh_cards_entity() { // 排序后的实体底层 cp
         if (!found) {
             card->the_fund_entity = nullptr;
             card->hide();
-            qDebug() << "刷新实体出错";
+            qDebug() << "刷新实体出错：未找到对应的基金代码" << card->fund_code;
         }
     }
 }
@@ -164,7 +185,7 @@ void fund_pannel_widget::connect_funds_ui()
         }
         delete child;
     }
-    qDebug() << this->g_fund_manager->funds_list[1].fund_name << "空?";
+
     for(model::fund_model &fm : this->g_fund_manager->funds_list){
         if(fm.visiable == true && fm.fund_valid == true){
             fund_card *card = new fund_card(&fm, QString::fromStdString(fm.fund_code), this);
@@ -196,11 +217,19 @@ void fund_pannel_widget::refresh_funds_ui()
         }
     }
 
+    refresh_cards_entity();
+
     QList<fund_card*> all_cards = this->findChildren<fund_card*>();
     QHash<std::string, fund_card*> code_to_card;
     for (auto card : all_cards) {
-        if (card && card->the_fund_entity) {
-            code_to_card[card->the_fund_entity->fund_code] = card;
+        if (card) {
+            std::string code = card->fund_code.toStdString();
+            if (code.empty() && card->the_fund_entity) {
+                code = card->the_fund_entity->fund_code;
+            }
+            if (!code.empty()) {
+                code_to_card[code] = card;
+            }
         }
     }
 
@@ -216,7 +245,7 @@ void fund_pannel_widget::refresh_funds_ui()
         if (it == code_to_card.end()) continue;
 
         fund_card* target_card = it.value();
-        target_card->the_fund_entity = &fm; // 刷新实体指针
+        target_card->the_fund_entity = &fm;
 
         if (fm.visiable && fm.fund_valid) {
             visible_cards.append(target_card);
