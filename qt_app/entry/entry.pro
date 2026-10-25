@@ -7,26 +7,35 @@ SOURCES += \
     entrywindow.cpp \
     $$PWD/../app_time/timewindow.cpp \
     $$PWD/../funds_pannel/fund_pannel_widget.cpp \
+    $$PWD/../funds_pannel/v_pack_pannel.cpp\
     $$PWD/../fund_card/fund_card.cpp \
     $$PWD/../chart_widget/chartwidget.cpp \
-    $$PWD/../pop_widgets/cal_param_widget.cpp
+    $$PWD/../pop_widgets/cal_param_widget.cpp \
+    $$PWD/../pop_widgets/sell_transaction_widget.cpp \
+    $$PWD/../pop_widgets/buy_transaction_widget.cpp
 
 HEADERS += \
     entrywindow.h \
     $$PWD/../app_time/timewindow.h \
     $$PWD/../funds_pannel/fund_pannel_widget.h \
+    $$PWD/../funds_pannel/v_pack_pannel.h\
     $$PWD/../fund_card/fund_card.h \
     $$PWD/../chart_widget/chartwidget.h \
     $$PWD/../chart_widget/simpleplotwidget.h \
-    $$PWD/../pop_widgets/cal_param_widget.h
+    $$PWD/../pop_widgets/cal_param_widget.h \
+    $$PWD/../pop_widgets/sell_transaction_widget.h \
+    $$PWD/../pop_widgets/buy_transaction_widget.h
 
 FORMS += \
     entrywindow.ui \
     $$PWD/../app_time/timewindow.ui \
     $$PWD/../funds_pannel/fund_pannel_widget.ui \
+    $$PWD/../funds_pannel/v_pack_pannel.ui\
     $$PWD/../fund_card/fund_card.ui \
     $$PWD/../chart_widget/chartwidget.ui \
-    $$PWD/../pop_widgets/cal_param_widget.ui
+    $$PWD/../pop_widgets/cal_param_widget.ui \
+    $$PWD/../pop_widgets/sell_transaction_widget.ui \
+    $$PWD/../pop_widgets/buy_transaction_widget.ui
 
 # 头文件路径
 INCLUDEPATH += $$PWD/../app_time

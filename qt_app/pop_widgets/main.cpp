@@ -2,11 +2,12 @@
 
 #include <QApplication>
 #include <model/fund_model.h>
+#include "buy_transaction_widget.h"
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    model::datas_fund_manager fmm=*new model::datas_fund_manager;
-    cal_param_Widget w(fmm);
-    w.show();
+
+    buy_transaction_widget  *w= new buy_transaction_widget(0,"dasd");
+    w->show();
     return QApplication::exec();
 }

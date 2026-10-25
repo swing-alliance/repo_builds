@@ -3,14 +3,21 @@ QT += widgets
 CONFIG += c++17
 
 SOURCES += \
+    buy_transaction_widget.cpp \
     main.cpp \
-    cal_param_widget.cpp
+    cal_param_widget.cpp \
+    sell_transaction_widget.cpp
 
 HEADERS += \
-    cal_param_widget.h
+    buy_transaction_widget.h \
+    cal_param_widget.h \
+    sell_transaction_widget.h
+
 
 FORMS += \
-    cal_param_widget.ui
+    buy_transaction_widget.ui \
+    cal_param_widget.ui \
+    sell_transaction_widget.ui\
 
 
 qnx: target.path = /tmp/$${TARGET}/bin

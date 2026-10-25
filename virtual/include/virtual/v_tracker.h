@@ -37,11 +37,12 @@ namespace v_sim {
 		bool v_mk_sell_trade_log(std::string ac_id, std::string symbol, int type,float sell_ratio);
 		void v_check_to_do(v_account& addr);     //检查是不是该做一些事情
 		void v_export_logs(); 
+		std::vector<std::string> export_float_val();  //导出此时浮动的各个买入价值，有bug，因为如果多个accountid买卖，这是多个的混乱记录，一个人时没问题
 		bool check_is_trade_day(std::string symbol);
 		bool check_is_trading_time();
 		int  get_trasfer_days(std::string symbol);   //获取这个返回是t+几？？需要标准加载，低级加载默认返回t+1
 		std::vector<transfer_log> trasfer_logs;
-		std::vector<trade_log> trade_logs;
+		std::vector<trade_log> trade_logs;     //记录所有交易
 	};
 
 

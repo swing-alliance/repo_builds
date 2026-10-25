@@ -3,16 +3,24 @@ CONFIG += c++17
 
 SOURCES += \
     main.cpp \
-    fund_card.cpp
+    fund_card.cpp \
+    $$PWD/../pop_widgets/buy_transaction_widget.cpp \
+    $$PWD/../pop_widgets/sell_transaction_widget.cpp
 
 HEADERS += \
-    fund_card.h
+    fund_card.h \
+    $$PWD/../pop_widgets/buy_transaction_widget.h \
+    $$PWD/../pop_widgets/sell_transaction_widget.h
 
 FORMS += \
-    fund_card.ui
+    fund_card.ui \
+    $$PWD/../pop_widgets/buy_transaction_widget.ui \
+    $$PWD/../pop_widgets/sell_transaction_widget.ui
 
 RESOURCES += \
     qss.qrc
+
+INCLUDEPATH += $$PWD/../pop_widgets
 
 # ==================== CMake 库 ====================
 CMAKE_BUILD_DIR = $$PWD/../../build

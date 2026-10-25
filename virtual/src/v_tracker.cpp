@@ -180,7 +180,72 @@ namespace v_sim {
 		}
 		return false;
 	}
+	std::vector<std::string> v_global_tracker::export_float_val() {
+		std::vector<std::string> result;
+		struct PositionInfo {
+			std::string ac_id;
+			std::string symbol;
+			float total_num = 0.0f;
+			int type = 0;
+		};
+		std::vector<PositionInfo> positions;
+		for (const auto& log : this->trade_logs) {
+			bool found = false;
+			for (auto& pos : positions) {
+				if (pos.ac_id == log.ac_id && pos.symbol == log.symbol) {
+					if (log.evt == buy_evt) {
+						pos.total_num += log.deal_num;
+					}
+					else if (log.evt == sell_evt) {
+						pos.total_num -= log.deal_num;
+					}
+					found = true;
+					break;
+				}
+			}
+			if (!found) {
+				PositionInfo pos;
+				pos.ac_id = log.ac_id;
+				pos.symbol = log.symbol;
+				pos.type = log.type;
+				if (log.evt == buy_evt) {
+					pos.total_num += log.deal_num;
+				}
+				else if (log.evt == sell_evt) {
+					pos.total_num -= log.deal_num;
+				}
+				positions.push_back(pos);
+			}
+		}
+		for (const auto& pos : positions) {
+			if (pos.total_num > 1.0f) {
+				float latest_accum_val = 0.0f;
+				bool found_market = false;
 
+				for (int i = 0; i < this->fund_datasource.data_nums(); i++) {
+					if (this->fund_datasource.funds_list[i].fund_code == pos.symbol) {
+						std::pair<int, int> rc = this->fund_datasource.funds_list[i].get_split_fund_model(1);
+						if (rc.first != -1 && rc.second != -1) {
+							latest_accum_val = this->fund_datasource.funds_list[i].data[rc.second].accum_val;
+							found_market = true;
+						}
+						break;
+					}
+				}
+				if (found_market) {
+					float current_value = pos.total_num * latest_accum_val;
+					std::string item_str = "账户: " + pos.ac_id +
+						" | 基金: " + pos.symbol +
+						" | 当前价值: " + std::to_string(current_value) +
+						" (持有份额: " + std::to_string(pos.total_num) +
+						" × 最新净值: " + std::to_string(latest_accum_val) + ")";
+					result.push_back(item_str);
+				}
+			}
+		}
+
+		return result;
+	}
 
 }
 

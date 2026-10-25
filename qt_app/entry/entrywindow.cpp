@@ -16,7 +16,7 @@
 #include <model/fund_model.h>
 #include "fund_pannel_widget.h"
 #include "cal_param_widget.h"
-
+#include "ui_v_pack_pannel.h"
 
 EntryWindow::EntryWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -26,7 +26,8 @@ EntryWindow::EntryWindow(QWidget *parent)
     this->main_page_timer=new QTimer(this);
     this->main_page_timer->start(500);
 
-    connect(this->main_page_timer,&QTimer::timeout,this,[this](){this->ui->t_label->setText(QString::fromStdString(core::getnow_string()));});
+    connect(this->main_page_timer,&QTimer::timeout,this,[this](){this->ui->t_label->setText(QString::fromStdString(core::getnow_string()));  //绑定时间到ui
+        if(this->fund_pannel!=nullptr &&this->fund_pannel->v_pannel!=nullptr){this->fund_pannel->v_pannel->ui->time_label->setText(QString::fromStdString(core::getnow_string()));}});
     connect(ui->action_v_time, &QAction::triggered, this, [this]() {   //调用虚拟时间实现
         if (this->t != nullptr) {
             this->t->raise();
@@ -74,6 +75,7 @@ EntryWindow::EntryWindow(QWidget *parent)
             else {
                 qDebug() << "当前不在基金面板，后台数据已更新，待切过来时自动刷新。";
             }
+            if(this->fund_pannel!=nullptr && this->fund_pannel->v_sim_pack!=nullptr){this->fund_pannel->v_sim_pack->v_global_tracker.v_check_to_do(this->fund_pannel->v_sim_pack->v_account);}  //后面有股票记得加
         });
         connect(this->t, &QObject::destroyed, this, [this]() {this->t = nullptr;});this->t->show();});
     connect(ui->actionlow_load,&QAction::triggered,this,[this](){                                   //低级加载
@@ -97,8 +99,9 @@ EntryWindow::EntryWindow(QWidget *parent)
             }
             if(ui->stackedWidget->currentWidget()==this->fund_pannel){this->fund_pannel->refresh_funds_ui();}
         });
-        cal_win->show();
-    });
+        cal_win->show();});
+    connect(ui->actionstart_v_pack,&QAction::triggered,this,[this](){if(this->fund_pannel!=nullptr){   //初始化虚拟包，之后才能够虚拟买和卖
+        emit fund_pannel->init_fund_v_pack();}});
     //======测试界=====
 
 

@@ -6,6 +6,7 @@
 #include<virtual/v_account.h>
 #include<virtual/v_tracker.h>
 #include<virtual/v_app.h>
+#include"v_pack_pannel.h"
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class fund_pannel_widget;
@@ -23,8 +24,11 @@ public:
     void refresh_funds_ui();
     explicit fund_pannel_widget(QWidget *parent = nullptr);
     ~fund_pannel_widget() override;
+    v_pack_pannel* v_pannel=nullptr;
+    v_sim::v_sim_pack * v_sim_pack=nullptr;
 
 signals:
+    void init_fund_v_pack();
     void need_refresh_cards_entity();
     void on_card_dir_chart(model::fund_model* fund_ptr);
 private slots:
@@ -33,9 +37,10 @@ private slots:
     void do_v_buy(float val,QString fund_code);
     void do_v_sell(float ratio,QString fund_code);
 private:
+
     Ui::fund_pannel_widget *ui;
     ChartWidget* chart_widget = nullptr;
-    v_sim::v_sim_pack * v_sim_pack=nullptr;
+
 };
 
 #endif // FUND_PANNEL_WIDGET_H

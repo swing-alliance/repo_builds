@@ -250,6 +250,7 @@ QPushButton:pressed {
     </property>
     <addaction name="actiondir_main"/>
     <addaction name="actiondir_fund_pannel"/>
+    <addaction name="actionstart_v_pack"/>
    </widget>
    <widget class="QMenu" name="settingmenu">
     <property name="title">
@@ -330,6 +331,11 @@ QPushButton:pressed {
   <action name="action_cal_resort">
    <property name="text">
     <string>计算和重排</string>
+   </property>
+  </action>
+  <action name="actionstart_v_pack">
+   <property name="text">
+    <string>启用模拟包</string>
    </property>
   </action>
  </widget>

@@ -7,7 +7,7 @@
 #include <QVBoxLayout>
 #include <model/fund_model.h>
 #include<QLineEdit>
-
+#include "v_pack_pannel.h"
 #include<core//paths.h>
 
 fund_pannel_widget::fund_pannel_widget(QWidget *parent)
@@ -17,8 +17,8 @@ fund_pannel_widget::fund_pannel_widget(QWidget *parent)
     ui->setupUi(this);
     g_fund_manager = new model::datas_fund_manager();
     ui->info_label->setText("基本信息");
-
-    connect(ui->lineEdit, &QLineEdit::textChanged, this, [this](const QString &text) {
+    connect(this,&fund_pannel_widget::init_fund_v_pack,this,[this](){this->init_v_sim_pack();});
+    connect(ui->lineEdit, &QLineEdit::textChanged, this, [this](const QString &text) {   //过滤的逻辑
         if (!this->g_fund_manager) return;
         QString search_text = text.trimmed().replace(u'（', u'(').replace(u'）', u')');
         QList<fund_card*> all_cards = this->findChildren<fund_card*>();
@@ -49,7 +49,7 @@ fund_pannel_widget::fund_pannel_widget(QWidget *parent)
         this->setUpdatesEnabled(true);
         this->update();
     });
-    connect(this,&fund_pannel_widget::need_refresh_cards_entity,this,[this](){this->refresh_cards_entity();});
+    connect(this,&fund_pannel_widget::need_refresh_cards_entity,this,[this](){this->refresh_cards_entity();});   //刷新card和实体的地址
 }
 
 fund_pannel_widget::~fund_pannel_widget()
@@ -71,6 +71,10 @@ void fund_pannel_widget::init_v_sim_pack()
         v_sim_pack->v_account.ac_id="user";
         v_sim_pack->v_account.ac_val=10000;
         v_sim_pack->v_global_tracker.fund_datasource=*(this->g_fund_manager);     //这是底层设计失误造成拷贝了，内存多了写
+    }
+    if(v_pannel==nullptr){
+        v_pannel=new v_pack_pannel(this->v_sim_pack);
+        ui->v_pack_layout->addWidget(v_pannel);
     }
 }
 
@@ -96,14 +100,18 @@ void fund_pannel_widget::refresh_cards_entity(){//排序后的实体底层cpp类
 
 void fund_pannel_widget::do_v_buy(float val, QString fund_code)
 {
+    if(this->v_sim_pack==nullptr){return;}
     bool ok=this->v_sim_pack->v_account.v_buy_fund(v_sim_pack->v_global_tracker,fund_code.toStdString(),val);
     if(!ok){qDebug()<<"虚拟操作失败";}
+    v_sim_pack->v_global_tracker.v_export_logs();
 }
 
 void fund_pannel_widget::do_v_sell(float ratio, QString fund_code)
 {
-    bool ok=this->v_sim_pack->v_account.v_buy_fund(v_sim_pack->v_global_tracker,fund_code.toStdString(),ratio);
-    if(!ok){qDebug()<<"虚拟操作失败";}
+    if(this->v_sim_pack == nullptr){ return; }
+    bool ok = this->v_sim_pack->v_account.v_sell_fund(v_sim_pack->v_global_tracker, fund_code.toStdString(), ratio);
+    if(!ok){ qDebug() << "虚拟操作失败"; }
+    v_sim_pack->v_global_tracker.v_export_logs();
 }
 
 
