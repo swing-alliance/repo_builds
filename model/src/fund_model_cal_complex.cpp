@@ -74,16 +74,17 @@ namespace model {
         const int  top_k = options.top_k;
         const BalancedWeights w;
 
-        // ---- 1. 刷新每只基金的指标 ----
+        // ---- 1. 刷新每只基金的指标（统一采用 249 天一年期统计窗口） ----
+        const int target_days = 249;
         for (fund_model& f : dfm.funds_list) {
-            f.get_recover_factor_ret(249);
-            f.get_sortino_ret(249);
-            f.get_span_ann_ret(1);
-            f.get_span_calmar_ret(1);
-            f.get_span_drawdown_ret(1);
-            f.get_span_sharpe_ret(1);
-            f.get_span_vol_ret(1);
-            f.get_split_fund_model(1);
+            f.get_recover_factor_ret(target_days);
+            f.get_sortino_ret(target_days);
+            f.get_span_ann_ret(target_days);
+            f.get_span_calmar_ret(target_days);
+            f.get_span_drawdown_ret(target_days);
+            f.get_span_sharpe_ret(target_days);
+            f.get_span_vol_ret(target_days);
+            f.get_split_fund_model(target_days);
         }
 
         // ---- 2. 直接对底层 `dfm.funds_list` 进行原地排序 ----
