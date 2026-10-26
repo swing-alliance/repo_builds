@@ -26,11 +26,11 @@ namespace model {
         // 综合评分权重（业务参数，可后续挪到配置里）
         struct BalancedWeights {
             double w_ann_return = 0.30;   // 年化收益
-            double w_calmar = 0.20;   // Calmar
-            double w_sharpe = 0.20;   // Sharpe
-            double w_sortino = 0.15;   // Sortino
-            double w_recover = 0.10;   // Recovery Factor
-            double w_vol_penalty = 0.05;   // 波动惩罚
+            double w_calmar = 0.20;       // Calmar
+            double w_sharpe = 0.20;       // Sharpe
+            double w_sortino = 0.15;      // Sortino
+            double w_recover = 0.10;      // Recovery Factor
+            double w_vol_penalty = 0.05;  // 波动惩罚
             double w_dd_penalty = 0.05;   // 回撤惩罚
         };
 
@@ -65,59 +65,67 @@ namespace model {
 
 
     // ============================================================
-    //  复合排序：BALANCED
+    //  复合排序：BALANCED（直接对底层 dfm.funds_list 进行原地排序）
     // ============================================================
     void sort_COMPLEX_BALANCED_stratagy(datas_fund_manager& dfm,
         const sort_options& options)
     {
         const bool desc = (options.order == sort_order::DESC);
         const int  top_k = options.top_k;
+        const BalancedWeights w;
 
-        // ---- 1. 刷新每只基金的指标（必须用引用！）----
+        // ---- 1. 刷新每只基金的指标 ----
         for (fund_model& f : dfm.funds_list) {
-            f.get_recover_factor_ret(1);
-            f.get_sortino_ret(1);
+            f.get_recover_factor_ret(249);
+            f.get_sortino_ret(249);
             f.get_span_ann_ret(1);
             f.get_span_calmar_ret(1);
             f.get_span_drawdown_ret(1);
             f.get_span_sharpe_ret(1);
             f.get_span_vol_ret(1);
-            f.get_split_fund_model(1);   // 若内部有副作用则保留；无则删掉
+            f.get_split_fund_model(1);
         }
 
-        // ---- 2. 计算综合评分，先全部隐藏 ----
-        const BalancedWeights w;
+        // ---- 2. 直接对底层 `dfm.funds_list` 进行原地排序 ----
+        std::sort(dfm.funds_list.begin(), dfm.funds_list.end(), [&w, desc](const fund_model& a, const fund_model& b) {
+            double sa = compute_balanced_score(a.cal_results, w);
+            double sb = compute_balanced_score(b.cal_results, w);
 
-        struct Scored { fund_model* f; double score; };
-        std::vector<Scored> scored;
-        scored.reserve(dfm.funds_list.size());
+            bool a_valid = (a.fund_valid != 0 && std::isfinite(sa));
+            bool b_valid = (b.fund_valid != 0 && std::isfinite(sb));
 
-        for (fund_model& f : dfm.funds_list) {
-            f.visiable = false;
-            if (f.fund_valid == 0) continue;
+            // 有效的排在无效前面
+            if (a_valid != b_valid) {
+                return a_valid;
+            }
+            // 双方都无效时按代码升序兜底
+            if (!a_valid && !b_valid) {
+                return a.fund_code < b.fund_code;
+            }
 
-            const double s = compute_balanced_score(f.cal_results, w);
-            if (!std::isfinite(s)) continue;
+            // 分数防抖与降序/升序
+            if (std::fabs(sa - sb) > 1e-6) {
+                return desc ? sa > sb : sa < sb;
+            }
 
-            scored.push_back({ &f, s });
-        }
-
-        // ---- 3. 排序 ----
-        std::sort(scored.begin(), scored.end(),
-            [desc](const Scored& a, const Scored& b) {
-                return desc ? a.score > b.score : a.score < b.score;
+            // 分数相同时按代码升序兜底
+            return a.fund_code < b.fund_code;
             });
 
-        // ---- 4. 设置 visiable，只亮前 top_k ----
-        int limit = (top_k > 0) ? top_k : static_cast<int>(scored.size());
-        if (limit > static_cast<int>(scored.size()))
-            limit = static_cast<int>(scored.size());
+        // ---- 3. 设置 visiable 显隐，只点亮前 top_k 个 ----
+        int limit = (top_k > 0) ? top_k : static_cast<int>(dfm.funds_list.size());
+        int valid_cnt = 0;
 
-        for (int i = 0; i < limit; ++i)
-            scored[i].f->visiable = true;
+        for (auto& f : dfm.funds_list) {
+            bool valid = (f.fund_valid != 0 && std::isfinite(compute_balanced_score(f.cal_results, w)));
+            if (valid && valid_cnt < limit) {
+                f.visiable = true;
+                ++valid_cnt;
+            }
+            else {
+                f.visiable = false;
+            }
+        }
     }
-
-
-
 
 } // namespace model
