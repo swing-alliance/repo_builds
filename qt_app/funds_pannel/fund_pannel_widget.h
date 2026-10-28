@@ -25,7 +25,7 @@ public:
     model::datas_fund_manager * g_fund_manager = nullptr;
     void connect_funds_ui();
     void refresh_funds_ui();
-    explicit fund_pannel_widget(QWidget *parent = nullptr);
+    explicit fund_pannel_widget(QWidget *parent = nullptr,QString title_str="主控制台");
     ~fund_pannel_widget() override;
     v_pack_pannel* v_pannel = nullptr;
     v_sim::v_sim_pack * v_sim_pack = nullptr;
@@ -36,6 +36,7 @@ signals:
     void on_card_dir_chart(model::fund_model* fund_ptr);
 
 private slots:
+    void batch_add_togroup(std::vector<QString>fund_codes);
     void init_v_sim_pack();
     void refresh_cards_entity();
     void do_v_buy(float val, QString fund_code);

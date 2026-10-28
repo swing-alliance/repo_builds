@@ -12,7 +12,10 @@ SOURCES += \
     $$PWD/../chart_widget/chartwidget.cpp \
     $$PWD/../pop_widgets/cal_param_widget.cpp \
     $$PWD/../pop_widgets/sell_transaction_widget.cpp \
-    $$PWD/../pop_widgets/buy_transaction_widget.cpp
+    $$PWD/../pop_widgets/buy_transaction_widget.cpp\
+    $$PWD/../pop_widgets/addgroup.cpp\
+    $$PWD/../pop_widgets/delgroup.cpp\
+    $$PWD/../pop_widgets/fundadd_togroup.cpp
 
 HEADERS += \
     entrywindow.h \
@@ -24,7 +27,10 @@ HEADERS += \
     $$PWD/../chart_widget/simpleplotwidget.h \
     $$PWD/../pop_widgets/cal_param_widget.h \
     $$PWD/../pop_widgets/sell_transaction_widget.h \
-    $$PWD/../pop_widgets/buy_transaction_widget.h
+    $$PWD/../pop_widgets/buy_transaction_widget.h\
+    $$PWD/../pop_widgets/addgroup.h\
+    $$PWD/../pop_widgets/delgroup.h\
+    $$PWD/../pop_widgets/fundadd_togroup.h
 
 FORMS += \
     entrywindow.ui \
@@ -35,7 +41,10 @@ FORMS += \
     $$PWD/../chart_widget/chartwidget.ui \
     $$PWD/../pop_widgets/cal_param_widget.ui \
     $$PWD/../pop_widgets/sell_transaction_widget.ui \
-    $$PWD/../pop_widgets/buy_transaction_widget.ui
+    $$PWD/../pop_widgets/buy_transaction_widget.ui\
+    $$PWD/../pop_widgets/addgroup.ui\
+    $$PWD/../pop_widgets/delgroup.ui\
+    $$PWD/../pop_widgets/fundadd_togroup.ui
 
 # 头文件路径
 INCLUDEPATH += $$PWD/../app_time

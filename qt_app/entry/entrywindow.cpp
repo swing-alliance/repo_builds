@@ -17,7 +17,8 @@
 #include "fund_pannel_widget.h"
 #include "cal_param_widget.h"
 #include "ui_v_pack_pannel.h"
-
+#include "addgroup.h"
+#include "delgroup.h"
 EntryWindow::EntryWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::EntryWindow)
@@ -144,5 +145,10 @@ void EntryWindow::dir_fund_pannel()
 }
 
 
+void EntryWindow::on_actionaddgroup_triggered()
+{addgroup * ad_gp=new addgroup;ad_gp->show();}
 
+
+void EntryWindow::on_actiondelgroup_triggered()
+{delgroup * d_gp=new delgroup;d_gp->show();}
 

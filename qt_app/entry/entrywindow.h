@@ -36,6 +36,10 @@ private slots:
     void dir_fund_pannel();
 
 
+    void on_actionaddgroup_triggered();
+
+    void on_actiondelgroup_triggered();
+
 private:
     ChartWidget* chart_widget = nullptr;
     TimeWindow * t = nullptr;

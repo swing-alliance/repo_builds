@@ -8,6 +8,7 @@ SOURCES += \
     $$PWD/../chart_widget/chartwidget.cpp \
     $$PWD/../pop_widgets/buy_transaction_widget.cpp \
     $$PWD/../pop_widgets/sell_transaction_widget.cpp \
+    $$PWD/../pop_widgets/fundadd_togroup.cpp\
     v_pack_pannel.cpp
 
 HEADERS += \
@@ -17,6 +18,7 @@ HEADERS += \
     $$PWD/../chart_widget/simpleplotwidget.h \
     $$PWD/../pop_widgets/buy_transaction_widget.h \
     $$PWD/../pop_widgets/sell_transaction_widget.h \
+    $$PWD/../pop_widgets/fundadd_togroup.h\
     v_pack_pannel.h
 
 FORMS += \
@@ -25,6 +27,7 @@ FORMS += \
     $$PWD/../chart_widget/chartwidget.ui \
     $$PWD/../pop_widgets/buy_transaction_widget.ui \
     $$PWD/../pop_widgets/sell_transaction_widget.ui \
+    $$PWD/../pop_widgets/fundadd_togroup.ui\
     v_pack_pannel.ui
 
 # 头文件路径（补上了 fund_card 的路径）

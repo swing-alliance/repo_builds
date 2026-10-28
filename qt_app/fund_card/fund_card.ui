@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>606</width>
-    <height>71</height>
+    <width>504</width>
+    <height>89</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -23,15 +23,6 @@
    <string notr="true">font: 11pt &quot;Microsoft YaHei&quot;;</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
-   <property name="leftMargin">
-    <number>0</number>
-   </property>
-   <property name="topMargin">
-    <number>0</number>
-   </property>
-   <property name="bottomMargin">
-    <number>0</number>
-   </property>
    <item>
     <layout class="QVBoxLayout" name="verticalLayout">
      <property name="leftMargin">
@@ -94,6 +85,12 @@
    </item>
    <item>
     <widget class="QLabel" name="additional_mark_label">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="text">
       <string>标识符号</string>
      </property>

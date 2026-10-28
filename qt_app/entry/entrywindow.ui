@@ -251,6 +251,9 @@ QPushButton:pressed {
     <addaction name="actiondir_main"/>
     <addaction name="actiondir_fund_pannel"/>
     <addaction name="actionstart_v_pack"/>
+    <addaction name="actionaddgroup"/>
+    <addaction name="actiondelgroup"/>
+    <addaction name="actionloadfromgroup"/>
    </widget>
    <widget class="QMenu" name="settingmenu">
     <property name="title">
@@ -336,6 +339,21 @@ QPushButton:pressed {
   <action name="actionstart_v_pack">
    <property name="text">
     <string>启用模拟包</string>
+   </property>
+  </action>
+  <action name="actionaddgroup">
+   <property name="text">
+    <string>添加分组</string>
+   </property>
+  </action>
+  <action name="actiondelgroup">
+   <property name="text">
+    <string>删除分组</string>
+   </property>
+  </action>
+  <action name="actionloadfromgroup">
+   <property name="text">
+    <string>从分组开始</string>
    </property>
   </action>
  </widget>

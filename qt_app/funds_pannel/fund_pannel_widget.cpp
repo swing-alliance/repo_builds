@@ -11,11 +11,13 @@
 #include <core/paths.h>
 #include <QTimer>
 
-fund_pannel_widget::fund_pannel_widget(QWidget *parent)
+fund_pannel_widget::fund_pannel_widget(QWidget *parent,QString title_str)
     : QWidget(parent)
     , ui(new Ui::fund_pannel_widget)
 {
+
     ui->setupUi(this);
+    ui->info_label->setText(title_str);
     g_fund_manager = new model::datas_fund_manager();
     ui->info_label->setText("基本信息");
 
@@ -32,8 +34,6 @@ fund_pannel_widget::fund_pannel_widget(QWidget *parent)
     connect(m_search_timer, &QTimer::timeout, this, [this]() {
         if (!this->g_fund_manager) return;
         QString search_text = ui->lineEdit->text().trimmed().replace(u'（', u'(').replace(u'）', u')');
-
-        // 1. 建立哈希映射，实现 O(1) 快速查找
         QHash<std::string, fund_card*> code_to_card;
         for (auto card : this->findChildren<fund_card*>()) {
             if (card) {
@@ -46,18 +46,13 @@ fund_pannel_widget::fund_pannel_widget(QWidget *parent)
                 }
             }
         }
-
         QList<fund_card*> visible_cards;
         QList<fund_card*> hidden_cards;
-
-        // 2. 严格按 g_fund_manager->funds_list 的原生顺序分类收集，并实时修正指针地址
         for (auto &fm : this->g_fund_manager->funds_list) {
             auto it = code_to_card.find(fm.fund_code);
             if (it == code_to_card.end()) continue;
             fund_card *card = it.value();
-
             card->the_fund_entity = &fm; // 实时对齐指针，防止地址错位
-
             bool base_valid = fm.visiable && fm.fund_valid;
             QString code = QString::fromStdString(fm.fund_code);
             QString name = QString::fromStdString(fm.fund_name);
@@ -71,25 +66,19 @@ fund_pannel_widget::fund_pannel_widget(QWidget *parent)
                 hidden_cards.append(card);
             }
         }
-
-        // 3. 开启性能锁，准备批量刷新
         this->setUpdatesEnabled(false);
-
         for (auto card : hidden_cards) {
             card->hide();
         }
-
         QLayoutItem *item;
         while ((item = ui->verticalcontainer->itemAt(0)) != nullptr) {
             ui->verticalcontainer->removeItem(item);
             delete item;
         }
-
         for (auto card : visible_cards) {
             card->show();
             ui->verticalcontainer->addWidget(card);
         }
-
         this->setUpdatesEnabled(true);
         this->update();
     });
@@ -113,6 +102,13 @@ fund_pannel_widget::~fund_pannel_widget()
     }
     delete g_fund_manager;
     delete ui;
+}
+
+void fund_pannel_widget::batch_add_togroup(std::vector<QString> fund_codes){
+    for(auto fund_code:fund_codes){
+
+    }
+
 }
 
 void fund_pannel_widget::init_v_sim_pack()
@@ -189,6 +185,7 @@ void fund_pannel_widget::connect_funds_ui()
     for(model::fund_model &fm : this->g_fund_manager->funds_list){
         if(fm.visiable == true && fm.fund_valid == true){
             fund_card *card = new fund_card(&fm, QString::fromStdString(fm.fund_code), this);
+
             card->align_info_ui();
             connect(card, &fund_card::dir_chart, this, &fund_pannel_widget::on_card_dir_chart);
             connect(card, &fund_card::buy_me, this, [this](float val, QString fund_code) { this->do_v_buy(val, fund_code); });
@@ -216,9 +213,7 @@ void fund_pannel_widget::refresh_funds_ui()
             fm.visiable = true;
         }
     }
-
     refresh_cards_entity();
-
     QList<fund_card*> all_cards = this->findChildren<fund_card*>();
     QHash<std::string, fund_card*> code_to_card;
     for (auto card : all_cards) {
@@ -238,12 +233,10 @@ void fund_pannel_widget::refresh_funds_ui()
         ui->verticalcontainer->removeItem(item);
         delete item;
     }
-
     QList<fund_card*> visible_cards;
     for (model::fund_model &fm : this->g_fund_manager->funds_list) {
         auto it = code_to_card.find(fm.fund_code);
         if (it == code_to_card.end()) continue;
-
         fund_card* target_card = it.value();
         target_card->the_fund_entity = &fm;
 
