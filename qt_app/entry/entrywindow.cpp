@@ -19,6 +19,7 @@
 #include "ui_v_pack_pannel.h"
 #include "addgroup.h"
 #include "delgroup.h"
+#include"load_fund_group.h"
 EntryWindow::EntryWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::EntryWindow)
@@ -151,4 +152,40 @@ void EntryWindow::on_actionaddgroup_triggered()
 
 void EntryWindow::on_actiondelgroup_triggered()
 {delgroup * d_gp=new delgroup;d_gp->show();}
+
+
+void EntryWindow::on_actionloadfromgroup_triggered()
+{
+    load_fund_group * ldfdg = new load_fund_group(this);
+    ldfdg->setWindowFlags(Qt::Dialog | Qt::Window);
+    QEventLoop loop;
+    connect(ldfdg, &QWidget::destroyed, &loop, &QEventLoop::quit);
+    ldfdg->show();
+    loop.exec();
+    if (!grouped_fund_pannel) {
+        grouped_fund_pannel = new fund_pannel_widget(this,"组");
+        connect(grouped_fund_pannel, &fund_pannel_widget::on_card_dir_chart,this, [this](model::fund_model* fund_ptr) {
+            if (!fund_ptr) return;
+            if (chart_widget) {
+                ui->stackedWidget->removeWidget(chart_widget);
+                chart_widget->deleteLater();
+                chart_widget = nullptr;
+            }
+            chart_widget = new ChartWidget(fund_ptr,QString::fromStdString(fund_ptr->fund_name),QString::fromStdString(fund_ptr->fund_code),this);
+            connect(chart_widget, &ChartWidget::pop_here,this, [this]() {this->dir_fund_pannel();});
+            ui->stackedWidget->addWidget(chart_widget);
+            ui->stackedWidget->setCurrentWidget(chart_widget);
+        });
+        if (this->g_fund_manager != nullptr) {grouped_fund_pannel->g_fund_manager = this->g_fund_manager;
+        } else {
+            grouped_fund_pannel->g_fund_manager = new model::datas_fund_manager();
+            this->g_fund_manager = grouped_fund_pannel->g_fund_manager;  // 保持唯一
+            grouped_fund_pannel->g_fund_manager->std_load_data(core::datasource+'/'+"temp_group_fund");
+        }
+        grouped_fund_pannel->connect_funds_ui();
+        ui->stackedWidget->addWidget(grouped_fund_pannel);
+    }
+    ui->stackedWidget->setCurrentWidget(grouped_fund_pannel);
+    grouped_fund_pannel->refresh_funds_ui();
+}
 

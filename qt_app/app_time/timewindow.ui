@@ -76,7 +76,7 @@
          <item>
           <widget class="QLabel" name="label">
            <property name="text">
-            <string>跳到下n个:</string>
+            <string>跳到下n个(需要模拟包支持):</string>
            </property>
           </widget>
          </item>

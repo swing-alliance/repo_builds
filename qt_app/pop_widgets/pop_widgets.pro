@@ -7,6 +7,7 @@ SOURCES += \
     buy_transaction_widget.cpp \
     delgroup.cpp \
     fundadd_togroup.cpp \
+    load_fund_group.cpp \
     main.cpp \
     cal_param_widget.cpp \
     sell_transaction_widget.cpp
@@ -17,6 +18,7 @@ HEADERS += \
     cal_param_widget.h \
     delgroup.h \
     fundadd_togroup.h \
+    load_fund_group.h \
     sell_transaction_widget.h
 
 
@@ -26,6 +28,7 @@ FORMS += \
     cal_param_widget.ui \
     delgroup.ui \
     fundadd_togroup.ui \
+    load_fund_group.ui \
     sell_transaction_widget.ui\
 
 

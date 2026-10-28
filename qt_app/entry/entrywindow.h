@@ -40,6 +40,8 @@ private slots:
 
     void on_actiondelgroup_triggered();
 
+    void on_actionloadfromgroup_triggered();
+
 private:
     ChartWidget* chart_widget = nullptr;
     TimeWindow * t = nullptr;
@@ -47,6 +49,7 @@ private:
     Ui::EntryWindow *ui;
     model::datas_fund_manager * g_fund_manager = nullptr;   //创建了不可以删除
     fund_pannel_widget * fund_pannel = nullptr;
+    fund_pannel_widget * grouped_fund_pannel=nullptr;
 
 };
 #endif // ENTRYWINDOW_H

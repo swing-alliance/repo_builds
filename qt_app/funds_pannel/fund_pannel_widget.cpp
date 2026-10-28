@@ -19,7 +19,7 @@ fund_pannel_widget::fund_pannel_widget(QWidget *parent,QString title_str)
     ui->setupUi(this);
     ui->info_label->setText(title_str);
     g_fund_manager = new model::datas_fund_manager();
-    ui->info_label->setText("基本信息");
+    ui->info_label->setText(title_str);
 
     connect(this, &fund_pannel_widget::init_fund_v_pack, this, [this](){
         this->init_v_sim_pack();
@@ -105,9 +105,6 @@ fund_pannel_widget::~fund_pannel_widget()
 }
 
 void fund_pannel_widget::batch_add_togroup(std::vector<QString> fund_codes){
-    for(auto fund_code:fund_codes){
-
-    }
 
 }
 
