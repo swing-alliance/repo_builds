@@ -34,8 +34,8 @@ EntryWindow::EntryWindow(QWidget *parent)
     setWindowTitle("入口站");
     this->main_page_timer=new QTimer(this);
     this->main_page_timer->start(500);
-    ui->action_v_time->setShortcut(QKeySequence("Ctrl+T"));
-    ui->action_cal_resort->setShortcut(QKeySequence("Ctrl+C"));
+    ui->action_v_time->setShortcut(QKeySequence("ALT+T"));
+    ui->action_cal_resort->setShortcut(QKeySequence("ALT+C"));
 
     connect(this->main_page_timer,&QTimer::timeout,this,[this](){this->ui->t_label->setText(QString::fromStdString(core::getnow_string()));  //绑定时间到ui
         if(this->fund_pannel!=nullptr &&this->fund_pannel->v_pannel!=nullptr){this->fund_pannel->v_pannel->ui->time_label->setText(QString::fromStdString(core::getnow_string()));}});
