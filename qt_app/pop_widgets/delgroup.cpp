@@ -2,11 +2,17 @@
 #include "ui_delgroup.h"
 #include<io_medi/buf_medi.h>
 #include<io_medi/db_medi.h>
+#include<QIcon>
+#include<QShortcut>
 delgroup::delgroup(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::delgroup)
 {
     ui->setupUi(this);
+    QShortcut* shortcut_enter = new QShortcut(QKeySequence(Qt::Key_Return), this);
+    connect(shortcut_enter, &QShortcut::activated, ui->yes_btn, &QPushButton::click);
+    setWindowTitle("删除分组");
+    setWindowIcon(QIcon("src/infinite.png"));
     std::string sql="select group_name from group_info";
     std::vector<std::string> names_v;
     io_medi::db_exec_stream(sql,[&](const std::string& col_val, int col_num){

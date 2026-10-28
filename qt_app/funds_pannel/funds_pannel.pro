@@ -57,3 +57,6 @@ LIBS += -Wl,--start-group \
 win32 {
     LIBS += -lws2_32 -lcrypt32
 }
+
+RESOURCES += \
+    png.qrc

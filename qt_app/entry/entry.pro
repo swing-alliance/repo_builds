@@ -76,6 +76,8 @@ LIBS += -Wl,--start-group \
 
 win32 {
     LIBS += -lws2_32 -lcrypt32
+    RC_ICONS = infinite.ico
 }
 
-RESOURCES += pack.qrc
+RESOURCES += \
+    png.qrc

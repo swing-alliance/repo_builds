@@ -42,6 +42,8 @@ private slots:
 
     void on_actionloadfromgroup_triggered();
 
+    void on_actionupdate_basic_data_triggered();
+
 private:
     ChartWidget* chart_widget = nullptr;
     TimeWindow * t = nullptr;

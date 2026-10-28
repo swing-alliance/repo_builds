@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>../src/autumn.png</file>
+        <file>../src/fund_card.qss</file>
         <file>../src/infinite.png</file>
         <file>../src/spring.png</file>
         <file>../src/summer.png</file>

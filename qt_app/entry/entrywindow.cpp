@@ -20,13 +20,22 @@
 #include "addgroup.h"
 #include "delgroup.h"
 #include"load_fund_group.h"
+#include<QIcon>
+#include <QProcess>
+#include <QMessageBox>
+#include <QCoreApplication>
+#include <QDir>
 EntryWindow::EntryWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::EntryWindow)
 {
     ui->setupUi(this);
+
+    setWindowTitle("入口站");
     this->main_page_timer=new QTimer(this);
     this->main_page_timer->start(500);
+    ui->action_v_time->setShortcut(QKeySequence("Ctrl+T"));
+    ui->action_cal_resort->setShortcut(QKeySequence("Ctrl+C"));
 
     connect(this->main_page_timer,&QTimer::timeout,this,[this](){this->ui->t_label->setText(QString::fromStdString(core::getnow_string()));  //绑定时间到ui
         if(this->fund_pannel!=nullptr &&this->fund_pannel->v_pannel!=nullptr){this->fund_pannel->v_pannel->ui->time_label->setText(QString::fromStdString(core::getnow_string()));}});
@@ -157,13 +166,14 @@ void EntryWindow::on_actiondelgroup_triggered()
 void EntryWindow::on_actionloadfromgroup_triggered()
 {
     load_fund_group * ldfdg = new load_fund_group(this);
-    ldfdg->setWindowFlags(Qt::Dialog | Qt::Window);
-    QEventLoop loop;
-    connect(ldfdg, &QWidget::destroyed, &loop, &QEventLoop::quit);
-    ldfdg->show();
-    loop.exec();
-    if (!grouped_fund_pannel) {
-        grouped_fund_pannel = new fund_pannel_widget(this,"组");
+    connect(ldfdg,&load_fund_group::dir_grouped_pannel,this,[this](QString g_name){
+        if (grouped_fund_pannel != nullptr)
+        {
+            ui->stackedWidget->removeWidget(grouped_fund_pannel);
+            grouped_fund_pannel->deleteLater();
+            grouped_fund_pannel = nullptr;
+        }
+        grouped_fund_pannel = new fund_pannel_widget(this,g_name);
         connect(grouped_fund_pannel, &fund_pannel_widget::on_card_dir_chart,this, [this](model::fund_model* fund_ptr) {
             if (!fund_ptr) return;
             if (chart_widget) {
@@ -171,21 +181,41 @@ void EntryWindow::on_actionloadfromgroup_triggered()
                 chart_widget->deleteLater();
                 chart_widget = nullptr;
             }
-            chart_widget = new ChartWidget(fund_ptr,QString::fromStdString(fund_ptr->fund_name),QString::fromStdString(fund_ptr->fund_code),this);
+            chart_widget = new ChartWidget(fund_ptr,
+                                           QString::fromStdString(fund_ptr->fund_name),
+                                           QString::fromStdString(fund_ptr->fund_code),
+                                           this);
             connect(chart_widget, &ChartWidget::pop_here,this, [this]() {this->dir_fund_pannel();});
             ui->stackedWidget->addWidget(chart_widget);
             ui->stackedWidget->setCurrentWidget(chart_widget);
         });
-        if (this->g_fund_manager != nullptr) {grouped_fund_pannel->g_fund_manager = this->g_fund_manager;
-        } else {
-            grouped_fund_pannel->g_fund_manager = new model::datas_fund_manager();
-            this->g_fund_manager = grouped_fund_pannel->g_fund_manager;  // 保持唯一
-            grouped_fund_pannel->g_fund_manager->std_load_data(core::datasource+'/'+"temp_group_fund");
-        }
+        grouped_fund_pannel->g_fund_manager->std_load_data(core::datasource+'/'+"temp_group_fund");
         grouped_fund_pannel->connect_funds_ui();
         ui->stackedWidget->addWidget(grouped_fund_pannel);
+        ui->stackedWidget->setCurrentWidget(grouped_fund_pannel);
+        grouped_fund_pannel->refresh_funds_ui();
+    });
+    ldfdg->setWindowFlags(Qt::Dialog | Qt::Window);
+    QEventLoop loop;
+    connect(ldfdg, &QWidget::destroyed, &loop, &QEventLoop::quit);
+    ldfdg->show();
+    loop.exec();
+
+
+}
+
+
+
+void EntryWindow::on_actionupdate_basic_data_triggered()
+{
+    QString appDir = QCoreApplication::applicationDirPath();
+    QString exePath = QDir(appDir).filePath("cpp_client.exe");
+
+    // 分离启动，和双击一样，直接弹出，互不依赖
+    bool ok = QProcess::startDetached(exePath);
+    if (!ok)
+    {
+        QMessageBox::warning(this, "启动失败", "无法启动：" + exePath);
     }
-    ui->stackedWidget->setCurrentWidget(grouped_fund_pannel);
-    grouped_fund_pannel->refresh_funds_ui();
 }
 

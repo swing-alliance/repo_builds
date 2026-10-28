@@ -47,3 +47,6 @@ LIBS += -Wl,--start-group \
     -L$$CMAKE_BUILD_DIR/io_medi -lio_medi\
     -L$$CMAKE_BUILD_DIR/sqlite3 -lsqlite3\
 -Wl,--end-group
+
+RESOURCES += \
+    png.qrc

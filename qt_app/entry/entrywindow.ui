@@ -285,6 +285,9 @@ QPushButton:pressed {
    <property name="text">
     <string>虚拟时间</string>
    </property>
+   <property name="toolTip">
+    <string>虚拟时间(T)</string>
+   </property>
   </action>
   <action name="actionlow_load">
    <property name="text">
@@ -303,7 +306,7 @@ QPushButton:pressed {
   </action>
   <action name="actionupdate_basic_data">
    <property name="text">
-    <string>从网络服务器拉取信息</string>
+    <string>从网络服务器拉取信息(测试版)</string>
    </property>
   </action>
   <action name="dir_login_test">

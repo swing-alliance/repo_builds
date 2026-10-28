@@ -3,11 +3,19 @@
 #include<io_medi/buf_medi.h>
 #include<io_medi/db_medi.h>
 #include<QMessageBox>
+#include<QIcon>
+#include<qshortcut>
 addgroup::addgroup(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::addgroup)
 {
     ui->setupUi(this);
+    QShortcut* shortcut_enter = new QShortcut(QKeySequence(Qt::Key_Return), this);
+    connect(shortcut_enter, &QShortcut::activated, ui->yes_btn, &QPushButton::click);
+
+    setWindowTitle("添加分组");
+    setWindowIcon(QIcon("src/infinite.png"));
+
 }
 
 addgroup::~addgroup()

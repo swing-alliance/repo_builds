@@ -5,12 +5,15 @@
 #include <QRadioButton>
 #include <ctime>
 #include <QDebug>
+#include<QShortcut>
 
 TimeWindow::TimeWindow(v_sim::v_sim_pack * v_pack_ptr, QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::TimeWindow)
 {
     ui->setupUi(this);
+    QShortcut* shortcut_enter = new QShortcut(QKeySequence(Qt::Key_Return), this);
+    connect(shortcut_enter, &QShortcut::activated, ui->yes_btn, &QPushButton::click);
     setAttribute(Qt::WA_DeleteOnClose);
 
     // 初始化显示当前时间

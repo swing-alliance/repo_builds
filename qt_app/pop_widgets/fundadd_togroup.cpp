@@ -7,11 +7,17 @@
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QJsonValue>
+#include<QIcon>
+#include<QShortcut>
 fundadd_togroup::fundadd_togroup(QString fund_code,std::vector<QString> fund_codes,QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::fundadd_togroup)
 {
     ui->setupUi(this);
+    QShortcut* shortcut_enter = new QShortcut(QKeySequence(Qt::Key_Return), this);
+    connect(shortcut_enter, &QShortcut::activated, ui->yes_btn, &QPushButton::click);
+    setWindowTitle("添加到分组");
+    setWindowIcon(QIcon("src/infinite.png"));
     this->fund_code=fund_code;
     this->fund_codes=fund_codes;
     ui->listWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);

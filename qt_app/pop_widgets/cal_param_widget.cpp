@@ -2,11 +2,17 @@
 #include "ui_cal_param_widget.h"
 #include <model/opt_enum.h>
 #include <QString>
+#include<QIcon>
+#include<QShortcut>
 cal_param_Widget::cal_param_Widget(model::datas_fund_manager& fmm,QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::cal_param_Widget)
 {
     ui->setupUi(this);
+    QShortcut* shortcut_enter = new QShortcut(QKeySequence(Qt::Key_Return), this);
+    connect(shortcut_enter, &QShortcut::activated, ui->yes_btn, &QPushButton::click);
+    setWindowTitle("计算参数");
+    setWindowIcon(QIcon("src/infinite.png"));
     ui->dayslineEdit->setText("60");
     m_radioGroup->addButton(ui->calma_btn);
     m_radioGroup->addButton(ui->maxdrawn_btn);

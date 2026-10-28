@@ -17,6 +17,8 @@ fund_pannel_widget::fund_pannel_widget(QWidget *parent,QString title_str)
 {
 
     ui->setupUi(this);
+    setWindowTitle("控制台");
+    setWindowIcon(QIcon(":/../src/infinite.png"));
     ui->info_label->setText(title_str);
     g_fund_manager = new model::datas_fund_manager();
     ui->info_label->setText(title_str);
@@ -253,4 +255,5 @@ void fund_pannel_widget::refresh_funds_ui()
     QApplication::restoreOverrideCursor();
     this->setEnabled(true);
     this->update();
+    m_search_timer->start();
 }

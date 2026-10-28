@@ -23,14 +23,14 @@ target_link_libraries(tests PUBLIC
 )
 
 # 4. 主测试可执行程序
-add_executable(test_inst
-    entry/compatible.cpp
+add_executable(cpp_client
+    entry/test_net.cpp
 )
 
 # 5. 可执行程序链接 tests 接口库
-target_link_libraries(test_inst PRIVATE tests)
+target_link_libraries(cpp_client PRIVATE tests)
 
 # 6. 针对 MSVC 开启 /utf-8 编码支持
 if(MSVC)
-  target_compile_options(test_inst PRIVATE /utf-8)
+  target_compile_options(cpp_client PRIVATE /utf-8)
 endif()
