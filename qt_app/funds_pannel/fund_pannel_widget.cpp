@@ -106,9 +106,7 @@ fund_pannel_widget::~fund_pannel_widget()
     delete ui;
 }
 
-void fund_pannel_widget::batch_add_togroup(std::vector<QString> fund_codes){
 
-}
 
 void fund_pannel_widget::init_v_sim_pack()
 {

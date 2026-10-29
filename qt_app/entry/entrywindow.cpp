@@ -47,7 +47,7 @@ EntryWindow::EntryWindow(QWidget *parent)
         }
         if(this->fund_pannel!=nullptr&&this->fund_pannel->v_sim_pack!=nullptr){this->t = new TimeWindow(this->fund_pannel->v_sim_pack,nullptr);}else{this->t = new TimeWindow(nullptr,nullptr);}
         connect(this->t, &TimeWindow::time_updated, this, [this]() {
-            if (this->g_fund_manager != nullptr) {
+            if (this->g_fund_manager == nullptr) {
                 this->g_fund_manager->fast_low_level_load_data(core::funds_row_dir);
             }
             if (this->fund_pannel != nullptr && ui->stackedWidget->currentWidget() == this->fund_pannel) {
