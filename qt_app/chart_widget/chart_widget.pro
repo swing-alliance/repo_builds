@@ -10,7 +10,8 @@ TARGET = chart_widget
 
 # 3. 确保包含自己的源码和 UI
 SOURCES += \
-    chartwidget.cpp
+    chartwidget.cpp \
+    main.cpp
 
 HEADERS += \
     chartwidget.h \

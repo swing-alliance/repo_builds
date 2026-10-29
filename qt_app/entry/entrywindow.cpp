@@ -125,7 +125,7 @@ EntryWindow::~EntryWindow(){delete ui;}
 
 void EntryWindow::dir_main_page(){ui->stackedWidget->setCurrentIndex(0);}
 
-void EntryWindow::dir_fund_pannel()
+void EntryWindow::dir_fund_pannel()     //导航到鸡
 {
     if (!fund_pannel) {
         fund_pannel = new fund_pannel_widget(this);
