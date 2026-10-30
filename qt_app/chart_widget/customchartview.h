@@ -21,7 +21,11 @@ signals:
     // 抬起笔后发出：vector + similarity + 采样数量
     void resultReady(const std::vector<DataPoint>& data,
                      double similarity,
-                     int sampleCount);
+                     int sampleCount,
+                     bool to_group);
+
+private slots:
+    void on_radioButton_clicked(bool checked);
 
 private:
     Ui::customchartview *ui;

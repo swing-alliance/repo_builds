@@ -19,6 +19,7 @@ customchartview::customchartview(QWidget *parent)
     ui->spinBox_samplenum->setRange(0, 1000);           // 按需调整范围
     ui->spinBox_samplenum->setSingleStep(1);
     ui->spinBox_samplenum->setValue(30);
+
     // ---------- 创建图表 ----------
     QChart* chart = new QChart;
     QValueAxis* axisX = new QValueAxis;
@@ -51,8 +52,8 @@ customchartview::customchartview(QWidget *parent)
             {
                 double similarity = ui->doubleSpinBox_similarity->value();
                 int sampleCount   = ui->spinBox_samplenum->value();
-
-                emit resultReady(data, similarity, sampleCount);
+                bool to_group=ui->radioButton->isChecked();
+                emit resultReady(data, similarity, sampleCount,to_group);
             });
 }
 
@@ -60,3 +61,5 @@ customchartview::~customchartview()
 {
     delete ui;
 }
+
+

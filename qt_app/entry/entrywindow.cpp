@@ -27,6 +27,7 @@
 #include <QDir>
 #include <customchartview.h>
 #include"fundadd_togroup.h"
+#include"popdialog.h"
 EntryWindow::EntryWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::EntryWindow)
@@ -227,50 +228,34 @@ void EntryWindow::on_actionupdate_basic_data_triggered()   //启动网络更新�
 
 void EntryWindow::on_actionchart_similaity_cal_triggered()   //相似度
 {
-    // 独立顶层弹窗
     customchartview *chart_similar = new customchartview;
-
     connect(chart_similar, &customchartview::resultReady, this,
-            [this, chart_similar](std::vector<DataPoint> result, double similarity, int sample_count)
+            [this, chart_similar](std::vector<DataPoint> result, double similarity, int sample_count,bool to_group)
             {
                 if (this->fund_pannel == nullptr || this->g_fund_manager == nullptr) {
                     chart_similar->deleteLater();
                     return;
                 }
-
-                // 画出来的 y 序列
                 std::vector<double> draw_y;
                 draw_y.reserve(result.size());
                 for (const auto& p : result) {
                     draw_y.push_back(p.y);
                 }
-
                 const size_t need_len = draw_y.size();
-
-                // 用来收集匹配结果：pair<相似度, fund_code>
                 std::vector<std::pair<double, QString>> matched;
-
                 for (model::fund_model &fund_entity : this->g_fund_manager->funds_list)
                 {
                     std::pair<int, int> p_index = fund_entity.get_split_fund_model(sample_count);
                     if (p_index.first == -1 || p_index.second == -1)
                         continue;
-
                     std::vector<double> fund_y;
                     fund_y.reserve(p_index.second - p_index.first + 1);
                     for (int i = p_index.first; i <= p_index.second; ++i) {
                         fund_y.push_back(fund_entity.data[i].accum_val);
                     }
-
-                    // 数量只能多不能少
-                    if (fund_y.size() < need_len)
-                        continue;
-
-                    // 从基金末尾取 need_len 个点
+                    if (fund_y.size() < need_len){continue;}
                     const double* a = draw_y.data();
                     const double* b = fund_y.data() + (fund_y.size() - need_len);
-
-                    // 皮尔逊相关系数
                     double mean_a = 0.0, mean_b = 0.0;
                     for (size_t i = 0; i < need_len; ++i) {
                         mean_a += a[i];
@@ -287,7 +272,6 @@ void EntryWindow::on_actionchart_similaity_cal_triggered()   //相似度
                         den_a += da * da;
                         den_b += db * db;
                     }
-
                     double pearson = 0.0;
                     if (den_a > 1e-8 && den_b > 1e-8) {
                         pearson = num / (std::sqrt(den_a) * std::sqrt(den_b));
@@ -307,10 +291,23 @@ void EntryWindow::on_actionchart_similaity_cal_triggered()   //相似度
                     qDebug() << "匹配基金:" << item.second
                              << "  相似度:" << QString::number(item.first, 'f', 4);
                 }
-                fundadd_togroup * add_togroup=new fundadd_togroup("",sorted_codes,nullptr);   //無根
-                add_togroup->show();
-            });
+                if(to_group){
+                    fundadd_togroup * add_togroup=new fundadd_togroup("",sorted_codes,nullptr);   //無根
+                    add_togroup->show();
+                }else{
+                    QString to_text;
+                    for (const auto& item : matched) {
+                        sorted_codes.push_back(item.second);
+                        to_text += "匹配基金:" + item.second
+                                   + "  相似度:" + QString::number(item.first, 'f', 4)
+                                   + "\n";
+                    }
+                    popDialog *dialog = new popDialog(to_text, nullptr);
+                    dialog->show();
+                }
 
+
+            });
     chart_similar->show();
 }
 

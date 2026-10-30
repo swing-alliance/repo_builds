@@ -10,6 +10,7 @@ SOURCES += \
     load_fund_group.cpp \
     main.cpp \
     cal_param_widget.cpp \
+    popdialog.cpp \
     sell_transaction_widget.cpp
 
 HEADERS += \
@@ -19,6 +20,7 @@ HEADERS += \
     delgroup.h \
     fundadd_togroup.h \
     load_fund_group.h \
+    popdialog.h \
     sell_transaction_widget.h
 
 
@@ -29,6 +31,7 @@ FORMS += \
     delgroup.ui \
     fundadd_togroup.ui \
     load_fund_group.ui \
+    popdialog.ui \
     sell_transaction_widget.ui\
 
 
