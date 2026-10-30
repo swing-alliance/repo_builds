@@ -10,6 +10,8 @@ SOURCES += \
     $$PWD/../funds_pannel/v_pack_pannel.cpp\
     $$PWD/../fund_card/fund_card.cpp \
     $$PWD/../chart_widget/chartwidget.cpp \
+    $$PWD/../chart_widget/customchartview.cpp\
+    $$PWD/../chart_widget/chart_drawer.cpp \
     $$PWD/../pop_widgets/cal_param_widget.cpp \
     $$PWD/../pop_widgets/sell_transaction_widget.cpp \
     $$PWD/../pop_widgets/buy_transaction_widget.cpp\
@@ -25,7 +27,9 @@ HEADERS += \
     $$PWD/../funds_pannel/v_pack_pannel.h\
     $$PWD/../fund_card/fund_card.h \
     $$PWD/../chart_widget/chartwidget.h \
+    $$PWD/../chart_widget/customchartview.h\
     $$PWD/../chart_widget/simpleplotwidget.h \
+    $$PWD/../chart_widget/chart_drawer.h\
     $$PWD/../pop_widgets/cal_param_widget.h \
     $$PWD/../pop_widgets/sell_transaction_widget.h \
     $$PWD/../pop_widgets/buy_transaction_widget.h\
@@ -41,6 +45,8 @@ FORMS += \
     $$PWD/../funds_pannel/v_pack_pannel.ui\
     $$PWD/../fund_card/fund_card.ui \
     $$PWD/../chart_widget/chartwidget.ui \
+    $$PWD/../chart_widget/customchartview.ui\
+    $$PWD/../chart_widget/chart_drawer.ui\
     $$PWD/../pop_widgets/cal_param_widget.ui \
     $$PWD/../pop_widgets/sell_transaction_widget.ui \
     $$PWD/../pop_widgets/buy_transaction_widget.ui\

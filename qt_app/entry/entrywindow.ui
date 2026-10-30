@@ -243,6 +243,7 @@ QPushButton:pressed {
     </property>
     <addaction name="action_v_time"/>
     <addaction name="action_cal_resort"/>
+    <addaction name="actionchart_similaity_cal"/>
    </widget>
    <widget class="QMenu" name="appmenu">
     <property name="title">
@@ -357,6 +358,11 @@ QPushButton:pressed {
   <action name="actionloadfromgroup">
    <property name="text">
     <string>从分组开始</string>
+   </property>
+  </action>
+  <action name="actionchart_similaity_cal">
+   <property name="text">
+    <string>图标相似度计算</string>
    </property>
   </action>
  </widget>

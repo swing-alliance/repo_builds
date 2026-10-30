@@ -44,7 +44,10 @@ private slots:
 
     void on_actionupdate_basic_data_triggered();
 
+    void on_actionchart_similaity_cal_triggered();
+
 private:
+    int m_lastStackIndex = 0;
     ChartWidget* chart_widget = nullptr;
     TimeWindow * t = nullptr;
     QTimer * main_page_timer = nullptr;

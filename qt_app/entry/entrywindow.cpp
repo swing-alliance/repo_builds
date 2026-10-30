@@ -25,6 +25,8 @@
 #include <QMessageBox>
 #include <QCoreApplication>
 #include <QDir>
+#include <customchartview.h>
+#include"fundadd_togroup.h"
 EntryWindow::EntryWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::EntryWindow)
@@ -123,7 +125,7 @@ EntryWindow::EntryWindow(QWidget *parent)
 
 EntryWindow::~EntryWindow(){delete ui;}
 
-void EntryWindow::dir_main_page(){ui->stackedWidget->setCurrentIndex(0);}
+void EntryWindow::dir_main_page(){ui->stackedWidget->setCurrentIndex(0);}  //导航到主页面
 
 void EntryWindow::dir_fund_pannel()     //导航到鸡
 {
@@ -137,7 +139,8 @@ void EntryWindow::dir_fund_pannel()     //导航到鸡
                         chart_widget = nullptr;
                     }
                     chart_widget = new ChartWidget(fund_ptr,QString::fromStdString(fund_ptr->fund_name),QString::fromStdString(fund_ptr->fund_code),this);
-                    connect(chart_widget, &ChartWidget::pop_here,this, [this]() {this->dir_fund_pannel();});
+                    connect(chart_widget, &ChartWidget::pop_here,this, [this]() {ui->stackedWidget->setCurrentIndex(m_lastStackIndex);});    //在图标中返回
+                    m_lastStackIndex = ui->stackedWidget->currentIndex();
                     ui->stackedWidget->addWidget(chart_widget);
                     ui->stackedWidget->setCurrentWidget(chart_widget);
                 });
@@ -150,20 +153,21 @@ void EntryWindow::dir_fund_pannel()     //导航到鸡
         fund_pannel->connect_funds_ui();
         ui->stackedWidget->addWidget(fund_pannel);
     }
+    m_lastStackIndex = ui->stackedWidget->currentIndex();
     ui->stackedWidget->setCurrentWidget(fund_pannel);
     fund_pannel->refresh_funds_ui();
 }
 
 
-void EntryWindow::on_actionaddgroup_triggered()
+void EntryWindow::on_actionaddgroup_triggered()    //添加组
 {addgroup * ad_gp=new addgroup;ad_gp->show();}
 
 
-void EntryWindow::on_actiondelgroup_triggered()
+void EntryWindow::on_actiondelgroup_triggered()   //删除组
 {delgroup * d_gp=new delgroup;d_gp->show();}
 
 
-void EntryWindow::on_actionloadfromgroup_triggered()
+void EntryWindow::on_actionloadfromgroup_triggered()     //从组加载
 {
     load_fund_group * ldfdg = new load_fund_group(this);
     connect(ldfdg,&load_fund_group::dir_grouped_pannel,this,[this](QString g_name){
@@ -185,7 +189,8 @@ void EntryWindow::on_actionloadfromgroup_triggered()
                                            QString::fromStdString(fund_ptr->fund_name),
                                            QString::fromStdString(fund_ptr->fund_code),
                                            this);
-            connect(chart_widget, &ChartWidget::pop_here,this, [this]() {this->dir_fund_pannel();});
+            connect(chart_widget, &ChartWidget::pop_here,this, [this]() {ui->stackedWidget->setCurrentIndex(m_lastStackIndex);});
+            m_lastStackIndex = ui->stackedWidget->currentIndex();
             ui->stackedWidget->addWidget(chart_widget);
             ui->stackedWidget->setCurrentWidget(chart_widget);
         });
@@ -206,7 +211,7 @@ void EntryWindow::on_actionloadfromgroup_triggered()
 
 
 
-void EntryWindow::on_actionupdate_basic_data_triggered()
+void EntryWindow::on_actionupdate_basic_data_triggered()   //启动网络更新工具
 {
     QString appDir = QCoreApplication::applicationDirPath();
     QString exePath = QDir(appDir).filePath("cpp_client.exe");
@@ -217,5 +222,95 @@ void EntryWindow::on_actionupdate_basic_data_triggered()
     {
         QMessageBox::warning(this, "启动失败", "无法启动：" + exePath);
     }
+}
+
+
+void EntryWindow::on_actionchart_similaity_cal_triggered()   //相似度
+{
+    // 独立顶层弹窗
+    customchartview *chart_similar = new customchartview;
+
+    connect(chart_similar, &customchartview::resultReady, this,
+            [this, chart_similar](std::vector<DataPoint> result, double similarity, int sample_count)
+            {
+                if (this->fund_pannel == nullptr || this->g_fund_manager == nullptr) {
+                    chart_similar->deleteLater();
+                    return;
+                }
+
+                // 画出来的 y 序列
+                std::vector<double> draw_y;
+                draw_y.reserve(result.size());
+                for (const auto& p : result) {
+                    draw_y.push_back(p.y);
+                }
+
+                const size_t need_len = draw_y.size();
+
+                // 用来收集匹配结果：pair<相似度, fund_code>
+                std::vector<std::pair<double, QString>> matched;
+
+                for (model::fund_model &fund_entity : this->g_fund_manager->funds_list)
+                {
+                    std::pair<int, int> p_index = fund_entity.get_split_fund_model(sample_count);
+                    if (p_index.first == -1 || p_index.second == -1)
+                        continue;
+
+                    std::vector<double> fund_y;
+                    fund_y.reserve(p_index.second - p_index.first + 1);
+                    for (int i = p_index.first; i <= p_index.second; ++i) {
+                        fund_y.push_back(fund_entity.data[i].accum_val);
+                    }
+
+                    // 数量只能多不能少
+                    if (fund_y.size() < need_len)
+                        continue;
+
+                    // 从基金末尾取 need_len 个点
+                    const double* a = draw_y.data();
+                    const double* b = fund_y.data() + (fund_y.size() - need_len);
+
+                    // 皮尔逊相关系数
+                    double mean_a = 0.0, mean_b = 0.0;
+                    for (size_t i = 0; i < need_len; ++i) {
+                        mean_a += a[i];
+                        mean_b += b[i];
+                    }
+                    mean_a /= need_len;
+                    mean_b /= need_len;
+
+                    double num = 0.0, den_a = 0.0, den_b = 0.0;
+                    for (size_t i = 0; i < need_len; ++i) {
+                        double da = a[i] - mean_a;
+                        double db = b[i] - mean_b;
+                        num   += da * db;
+                        den_a += da * da;
+                        den_b += db * db;
+                    }
+
+                    double pearson = 0.0;
+                    if (den_a > 1e-8 && den_b > 1e-8) {
+                        pearson = num / (std::sqrt(den_a) * std::sqrt(den_b));
+                    }
+                    if (pearson >= similarity) {
+                        matched.emplace_back(pearson, QString::fromStdString(fund_entity.fund_code));
+                    }
+                }
+                std::sort(matched.begin(), matched.end(),
+                          [](const std::pair<double, QString>& a, const std::pair<double, QString>& b) {
+                              return a.first > b.first;   // 降序
+                          });
+                std::vector<QString> sorted_codes;
+                sorted_codes.reserve(matched.size());
+                for (const auto& item : matched) {
+                    sorted_codes.push_back(item.second);
+                    qDebug() << "匹配基金:" << item.second
+                             << "  相似度:" << QString::number(item.first, 'f', 4);
+                }
+                fundadd_togroup * add_togroup=new fundadd_togroup("",sorted_codes,nullptr);   //無根
+                add_togroup->show();
+            });
+
+    chart_similar->show();
 }
 
