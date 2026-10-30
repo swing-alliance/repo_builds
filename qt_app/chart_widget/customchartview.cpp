@@ -63,3 +63,9 @@ customchartview::~customchartview()
 }
 
 
+
+void customchartview::on_radioButton_clicked(bool checked)
+{
+    return;
+}
+
