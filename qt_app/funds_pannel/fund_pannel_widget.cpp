@@ -231,7 +231,7 @@ void fund_pannel_widget::refresh_funds_ui()
         delete item;
     }
     QList<fund_card*> visible_cards;
-    for (model::fund_model &fm : this->g_fund_manager->funds_list) {
+    for(model::fund_model &fm : this->g_fund_manager->funds_list) {
         auto it = code_to_card.find(fm.fund_code);
         if (it == code_to_card.end()) continue;
         fund_card* target_card = it.value();

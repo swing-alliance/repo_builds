@@ -305,8 +305,6 @@ void EntryWindow::on_actionchart_similaity_cal_triggered()   //相似度
                     popDialog *dialog = new popDialog(to_text, nullptr);
                     dialog->show();
                 }
-
-
             });
     chart_similar->show();
 }

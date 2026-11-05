@@ -24,3 +24,12 @@ add_subdirectory(virtual)
 
 #cmake -B build -G "MinGW Makefiles" -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++
 #cmake --build build
+
+
+#cmake -B build -G "MinGW Makefiles" -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -DCMAKE_BUILD_TYPE=Release
+
+# 3. 开始编译
+#cmake --build build --parallel 4
+
+#set http_proxy=http://127.0.0.1:10809
+#set https_proxy=http://127.0.0.1:10809
